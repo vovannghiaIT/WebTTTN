@@ -7,6 +7,7 @@ import * as actions from "../../../store/actions";
 import ItemsImg from "../../../components/ItemsImg";
 import { apiDeleteCategories, apiDeleteImages } from "../../../services";
 import { toast } from "react-toastify";
+import { Pagination } from "../../../components";
 const HomeCategory = () => {
   const {
     BiPlusCircle,
@@ -84,6 +85,22 @@ const HomeCategory = () => {
     fetchData();
     // console.log(this.refs.minus.checked);
   };
+
+  //Panginate
+  const [itemOffset, setItemOffset] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  const endOffset = itemOffset + itemsPerPage;
+  const currentItems = categories.slice(itemOffset, endOffset);
+  const total = categories;
+  const pageCount = Math.ceil(total.length / itemsPerPage);
+  // console.log(total);
+
+  const handlePageClick = (event) => {
+    const newOffset = (event.selected * itemsPerPage) % categories.length;
+    setItemOffset(newOffset);
+  };
+
   // console.log(checked);
   return (
     <div className="p-5 grid gap-4">
@@ -118,7 +135,10 @@ const HomeCategory = () => {
         <RiArrowDropDownFill size={35} />
       </div>
       <div className="bg-white rounded-sm shadow-md p-2 ">
-        <table className="bg-gray-200 w-full overflow-hidden " id="customers">
+        <table
+          className="bg-gray-200 w-full overflow-hidden mb-5"
+          id="customers"
+        >
           <thead>
             <tr className="border border-gray-300">
               <th className="border border-gray-300 text-center capitalize px-4 py-2 ">
@@ -163,8 +183,8 @@ const HomeCategory = () => {
             </tr>
           </thead>
           <tbody>
-            {categories?.length > 0 &&
-              categories.map((items, index) => {
+            {currentItems?.length > 0 &&
+              currentItems.map((items, index) => {
                 return (
                   <tr className="border border-gray-300" key={index}>
                     <td className="border border-gray-300 text-center px-4 py-2">
@@ -233,6 +253,7 @@ const HomeCategory = () => {
               })}
           </tbody>
         </table>
+        <Pagination pageCount={pageCount} handlePageClick={handlePageClick} />
       </div>
     </div>
   );

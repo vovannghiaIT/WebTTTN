@@ -4,14 +4,20 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../../../store/actions";
 import ItemsImg from "../../../components/ItemsImg";
-import { apiDeleteImages, apiDeleteProduct } from "../../../services";
+import {
+  apiDeleteCate,
+  apiDeleteImages,
+  apiDeleteProduct,
+} from "../../../services";
 import { toast } from "react-toastify";
+import { Pagination } from "../../../components";
 
 const HomeProduct = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { products } = useSelector((state) => state.product);
   const { images } = useSelector((state) => state.image);
+  const { cates } = useSelector((state) => state.cate);
 
   const [checkAll, setcheckAll] = useState(false);
   const [check, setCheck] = useState([]);
@@ -22,6 +28,7 @@ const HomeProduct = () => {
   const fetchData = async () => {
     dispatch(actions.getProduct());
     dispatch(actions.getImages());
+    dispatch(actions.getCate());
   };
   const {
     BiPlusCircle,
@@ -51,18 +58,23 @@ const HomeProduct = () => {
   const submitDelete = async () => {
     //delete product
     //delete img
-    for (let i = 0; i <= check.length; i++) {
-      // console.log(check[i]);
+    for (let i = 0; i < check.length; i++) {
       let listImg = products.filter((items) => items?._id === check[i]);
 
-      // console.log(listImg);
+      let listCate = cates.filter(
+        (items) => items?.product_id === listImg[0]?.categoryId
+      );
+      for (let item = 0; item < listCate.length; item++) {
+        await apiDeleteCate(listCate[i]);
+      }
+
       if (listImg[0]) {
         await apiDeleteProduct(listImg[0]);
       }
       let itemsImg = images.filter(
         (items) => items?.code === listImg[0]?.imagesId
       );
-      // console.log(itemsImg);
+
       if (itemsImg[0]) {
         await apiDeleteImages(itemsImg[0]);
       }
@@ -77,9 +89,23 @@ const HomeProduct = () => {
       progress: undefined,
       theme: "light",
     });
+    setChecked(false);
     fetchData();
     setCheck([]);
-    setChecked(false);
+  };
+  //Panginate
+  const [itemOffset, setItemOffset] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  const endOffset = itemOffset + itemsPerPage;
+  const currentItems = products.slice(itemOffset, endOffset);
+  const total = products;
+  const pageCount = Math.ceil(total.length / itemsPerPage);
+  // console.log(total);
+
+  const handlePageClick = (event) => {
+    const newOffset = (event.selected * itemsPerPage) % products.length;
+    setItemOffset(newOffset);
   };
   return (
     <div className="p-5 grid gap-4">
@@ -114,7 +140,10 @@ const HomeProduct = () => {
         <RiArrowDropDownFill size={35} />
       </div>
       <div className="bg-white rounded-sm shadow-md p-2 ">
-        <table className="bg-gray-200 w-full overflow-hidden " id="customers">
+        <table
+          className="bg-gray-200 w-full overflow-hidden mb-5 "
+          id="customers"
+        >
           <thead>
             <tr className="border border-gray-300">
               <th className="border border-gray-300 text-center capitalize px-4 py-2 ">
@@ -164,8 +193,8 @@ const HomeProduct = () => {
             </tr>
           </thead>
           <tbody>
-            {products?.length > 0 &&
-              products
+            {currentItems?.length > 0 &&
+              currentItems
                 .filter((items) => items.status === 1)
                 .map((items, index) => {
                   return (
@@ -242,6 +271,7 @@ const HomeProduct = () => {
                 })}
           </tbody>
         </table>
+        <Pagination pageCount={pageCount} handlePageClick={handlePageClick} />
       </div>
     </div>
   );

@@ -19,6 +19,11 @@
     clip-path: circle(35.0% at 0 51%);
 }
 
+.clip__pathSale {
+    clip-path: polygon(50% 0%, 100% 0, 100% 35%, 100% 90%, 50% 56%, 0 90%, 0% 35%, 0 0);
+
+}
+
 .clip__pathAdmin {
     clip-path: circle(50% at 50% 100%);
 }
@@ -357,4 +362,9 @@ select {
 
 #customers tr:hover {
     background-color: #ddd;
+}
+
+/* ckEditor */
+.ck-editor__editable {
+    max-height: 200px;
 }

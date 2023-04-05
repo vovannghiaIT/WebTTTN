@@ -9,6 +9,7 @@ import authRouter from "./auth";
 import currentRouter from "./current";
 import searchRouter from "./search";
 import imagesRouter from "./images";
+import cateRouter from "./cate";
 
 const initRouters = (app) => {
   app.use("/api/v1/user", userRouter);
@@ -21,6 +22,7 @@ const initRouters = (app) => {
   app.use("/api/v1/brand", brandRouter);
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/images", imagesRouter);
+  app.use("/api/v1/cate", cateRouter);
 
   app.use("/api/v1", searchRouter);
   return app.use("/", (req, res) => {

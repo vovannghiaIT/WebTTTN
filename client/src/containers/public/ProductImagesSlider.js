@@ -80,7 +80,7 @@ const ProductImagesSlider = ({ imagesId, images }) => {
         }}
         className="mySwiper"
       >
-        {images?.length > 1 &&
+        {dataImages[0]?.picture.length > 1 &&
           dataImages[0]?.picture?.map((i, index) => {
             return (
               <SwiperSlide key={index}>

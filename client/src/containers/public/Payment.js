@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { NoProduct } from "../../components";
+import { ItemsImg, NoProduct } from "../../components";
 import { v4 } from "uuid";
 import data from "../../ultils/Common/data.json";
 import { numberWithCommas } from "../../ultils/Common/formatVietnameseToString";
 import { path } from "../../ultils/constant";
 import icons from "../../ultils/icons";
 import * as actions from "../../store/actions";
+import emailjs from "@emailjs/browser";
 import {
   apiInsertOrderDetails,
   apiInsertOrders,
@@ -19,6 +20,7 @@ import { toast, ToastContainer } from "react-toastify";
 const Payment = () => {
   const { FcPrevious } = icons;
   const navigate = useNavigate();
+
   const date = new Date();
   const dispatch = useDispatch();
   const [isActive, setIsActive] = useState({
@@ -28,6 +30,7 @@ const Payment = () => {
     address: "",
     text: "",
   });
+  const { images } = useSelector((state) => state.image);
   // address
   const [dataAddress, setDataAddress] = useState();
   const [dataCity, setDataCity] = useState();
@@ -42,20 +45,25 @@ const Payment = () => {
   const [invalidFields, setInvalidFields] = useState([]);
   // add pay
   const { currentData } = useSelector((state) => state.user);
+  const [email, setEmail] = useState({
+    user_name: currentData?.firstName + currentData?.lastName,
+    user_email: currentData?.email || "",
+    message: "Bạn đã đặt hàng thành công!",
+  });
   const [payloadDetail, setpayloadDetail] = useState({
     name: "",
     orderId: "",
     productId: 0,
     price: "",
-    images: "",
+    imagesId: "",
     quantity: "",
     amount: 0,
     status: 1,
   });
   const [payloadOrder, setPayloadOrder] = useState({
-    id: "",
+    _id: "",
     code: "",
-    userId: currentData?.id || "",
+    userId: currentData?._id || "",
     exportdate: "",
     deliveryaddress: "",
     deliveryname: currentData?.firstName + currentData?.lastName,
@@ -66,10 +74,15 @@ const Payment = () => {
   });
 
   useEffect(() => {
+    setEmail({
+      user_name: currentData?.firstName + currentData?.lastName,
+      user_email: currentData?.email || "",
+      message: "Bạn đã đặt hàng thành công!",
+    });
     setPayloadOrder({
-      id: "",
+      _id: "",
       code: "",
-      userId: currentData?.id || "",
+      userId: currentData?._id || "",
       exportdate: "",
       deliveryaddress: "",
       deliveryname: currentData?.firstName + currentData?.lastName || "",
@@ -87,6 +100,7 @@ const Payment = () => {
 
   const fetchCurrent = async () => {
     dispatch(actions.getCurrent());
+    dispatch(actions.getImages());
   };
 
   //Cart
@@ -145,7 +159,7 @@ const Payment = () => {
   const submitPay = async () => {
     let addressvalue = dataCity + "," + IdDistricts + "," + idWard;
 
-    payloadOrder.id = v4();
+    payloadOrder._id = v4();
 
     payloadOrder.deliveryaddress = addressvalue;
 
@@ -155,7 +169,11 @@ const Payment = () => {
     payloadOrder.code = code;
     let invalidsOrder = validate(payloadOrder);
 
-    console.log(addressvalue);
+    // console.log(dataCart);
+    //-------------
+
+    //------------
+
     if (dataCart === "" || !dataCart) {
       toast.warning("Bạn chưa có sản phẩm", {
         position: "top-right",
@@ -184,8 +202,9 @@ const Payment = () => {
         payloadDetail.name = dataCart[i]?.name;
         payloadDetail.price = dataCart[i]?.price;
         payloadDetail.quantity = dataCart[i]?.number;
-        payloadDetail.images = dataCart[i]?.images;
-        payloadDetail.orderId = payloadOrder?.id;
+        payloadDetail.imagesId = dataCart[i]?.images[0]?.code;
+        payloadDetail.orderId = payloadOrder?._id;
+        // console.log("payloadDetail", payloadDetail);
         await apiInsertOrderDetails(payloadDetail);
       }
       let avatar = currentData?.avatar;
@@ -198,6 +217,7 @@ const Payment = () => {
         avatar: avatar,
         orders: orders,
       });
+      sendEmail();
       toast.success("Đặt hàng thành công", {
         position: "top-right",
         autoClose: 1000,
@@ -213,6 +233,19 @@ const Payment = () => {
       }, 2100);
       setCookie("Cart", "", { path: "/" });
     }
+  };
+
+  const sendEmail = () => {
+    emailjs
+      .send("service_dexav2e", "template_lfjpcan", email, "bYxPdUGcB7fHNoKok")
+      .then(
+        function (response) {
+          console.log("SUCCESS!", response.status, response.text);
+        },
+        function (error) {
+          console.log("FAILED...", error);
+        }
+      );
   };
 
   const validate = (payload) => {
@@ -243,7 +276,29 @@ const Payment = () => {
           </div>
           <div className="font-semibold ">Thông tin nhận hàng</div>
           <div className="flex flex-col gap-4 p-2 sm:max-md:w-full">
-            <div className=" input-effect relative ">
+            <div className=" input-effect relative mb-3 ">
+              {/* <form onSubmit={sendEmail}>
+                <input
+                  type="hidden"
+                  name="user_name"
+                  value={email?.user_name}
+                />
+
+                <input
+                  type="hidden"
+                  name="user_email"
+                  value={email?.user_email}
+                />
+
+                <input type="hidden" name="subject" value={"xin chào"} />
+
+                <input
+                  type="hidden"
+                  name="message"
+                  value={"Bạn đã đặt hàng thành công"}
+                />
+                <input type="submit" value="Send" />
+              </form> */}
               <input
                 id="email"
                 className={`effect-16 w-full ${
@@ -259,6 +314,10 @@ const Payment = () => {
                   }));
                 }}
                 onChange={(e) => {
+                  setEmail((prev) => ({
+                    ...prev,
+                    [" user_email"]: e.target.value,
+                  }));
                   setPayloadOrder((prev) => ({
                     ...prev,
                     ["deliveryemail"]: e.target.value,
@@ -281,7 +340,8 @@ const Payment = () => {
 
               <span className="focus-border"></span>
             </div>
-            <div className=" input-effect relative">
+
+            <div className=" input-effect relative mb-3">
               <input
                 id="name"
                 className={`effect-16 w-full ${
@@ -297,12 +357,16 @@ const Payment = () => {
                     ["name"]: e.target.value,
                   }));
                 }}
-                onChange={(e) =>
+                onChange={(e) => {
+                  setEmail((prev) => ({
+                    ...prev,
+                    [" user_name"]: e.target.value,
+                  }));
                   setPayloadOrder((prev) => ({
                     ...prev,
-                    ["deliveryname"]: e.target.value,
-                  }))
-                }
+                    ["delivername"]: e.target.value,
+                  }));
+                }}
                 onFocus={() => setInvalidFields([])}
               />
               {invalidFields.length > 0 &&
@@ -318,7 +382,7 @@ const Payment = () => {
               <label>Họ và tên</label>
               <span className="focus-border"></span>
             </div>
-            <div className=" input-effect relative">
+            <div className=" input-effect relative mb-3">
               <input
                 id="phone"
                 className={`effect-16 w-full ${
@@ -528,19 +592,21 @@ const Payment = () => {
                     >
                       <div className="flex gap-5 justify-start items-center">
                         <div className="w-10">
-                          {items?.images?.length > 0 &&
-                            items?.images
-                              .filter((i, index) =>
-                                indexs.some((i) => i === index)
+                          {images?.length > 0 &&
+                            images
+                              .filter(
+                                (item) =>
+                                  item?.status === 1 &&
+                                  item?.code === items?.images[0]?.code
                               )
-                              ?.map((i, index) => {
+                              .map((itemsImg, index) => {
                                 return (
-                                  <img
+                                  <div
                                     key={index}
-                                    className="object-cover h-10"
-                                    src={i}
-                                    alt="images cart"
-                                  />
+                                    className="w-1/2  overflow-hidden"
+                                  >
+                                    <ItemsImg images={itemsImg?.picture} />
+                                  </div>
                                 );
                               })}
                         </div>

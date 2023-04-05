@@ -45,9 +45,16 @@ const ItemsProduct = ({
       {!contextleft && !contextright && (
         <Link
           to={"/productdetail/" + slug}
-          className={`shadow-25% flex gap-2 flex-col p-2 w-full h-full min-w-[120px]  bg-white rounded-md overflow-hidden cursor-pointer `}
+          className={`shadow-25% flex gap-2 flex-col p-2 w-full h-full min-w-[120px]  bg-white rounded-md overflow-hidden cursor-pointer relative`}
           onClick={onClick}
         >
+          {pricesale !== 0 && (
+            <div className="absolute clip__pathSale bg-red-500 w-[40px] h-[50px] top-0 left-0 z-50 shadow-md">
+              <p className="w-full text-center text-[10px] text-white font-sans font-semibold ">
+                Giảm {pricesale}%
+              </p>
+            </div>
+          )}
           {images?.length > 0 &&
             images
               .filter((item) => item?.status === 1 && item?.code === imagesId)

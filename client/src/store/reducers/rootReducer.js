@@ -12,6 +12,7 @@ import searchReducer from "./searchReducer";
 import orderReducer from "./orderReducer";
 import orderdetailReducer from "./orderdetailReducer";
 import imageReducer from "./imageReducer";
+import cateReducer from "./cateReducer";
 
 const commonConfig = {
   storage,
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
   order: orderReducer,
   orderdetail: orderdetailReducer,
   image: imageReducer,
+  cate: cateReducer,
 });
 
 export default rootReducer;

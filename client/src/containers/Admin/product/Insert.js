@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import ItemsImg from "../../../components/ItemsImg";
 import {
+  apiInsertCate,
   apiInsertImages,
   apiInsertProducts,
   apiUploadImages,
@@ -13,10 +14,11 @@ import * as actions from "../../../store/actions";
 import { v4 } from "uuid";
 import Toast from "../../../components/Toast";
 
+import AsyncSelect from "react-select/async";
 //CKEditor
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { Loading } from "../../../components";
+import { Loading, SelectMuitil } from "../../../components";
 import { toast } from "react-toastify";
 
 const Insert = () => {
@@ -28,10 +30,11 @@ const Insert = () => {
   const [check, setCheck] = useState(false);
   const [addsale, setAddsale] = useState(0);
   const [tytoast, setTyToast] = useState(false);
-  const [addCategory, setAddCategory] = useState([]);
-  const [addBrand, setAddBrand] = useState([]);
-  const [addOpera, setAddOpera] = useState([]);
+  const [addCategory, setAddCategory] = useState("");
+  const [addBrand, setAddBrand] = useState("");
+  const [addOpera, setAddOpera] = useState("");
   const [dataDescription, setDataDescription] = useState();
+
   const dispatch = useDispatch();
 
   const { products } = useSelector((state) => state.product);
@@ -41,7 +44,9 @@ const Insert = () => {
   const { brands } = useSelector((state) => state.brand);
   useEffect(() => {
     fetchData();
+    fectDataCategory();
   }, []);
+
   const fetchData = async () => {
     dispatch(actions.getBrand());
     dispatch(actions.getOpera());
@@ -50,7 +55,13 @@ const Insert = () => {
     dispatch(actions.getProduct());
   };
 
-  // console.log(images);
+  const fectDataCategory = async () => {
+    // console.log(categories);
+
+    return categories;
+  };
+
+  // console.log(fectDataCategory);
   const [payload, setPayload] = useState({
     name: "",
     categoryId: "",
@@ -79,8 +90,19 @@ const Insert = () => {
     status: 1,
   });
 
-  const handleAddCategory = (e) => {
-    setAddCategory(e.target.value);
+  const [payloadCate, setPayloadCate] = useState({
+    name: "",
+    product_id: "",
+    slug: "",
+    imagesId: "",
+    parent_id: "",
+    displayorder: "",
+    value: "",
+    status: 1,
+  });
+
+  const handleAddCategory = (value) => {
+    setAddCategory(value);
   };
   const handleAddBrands = (e) => {
     setAddBrand(e.target.value);
@@ -156,13 +178,14 @@ const Insert = () => {
   const handleaddsale = (e) => {
     setAddsale(e.target.value);
   };
+  const [Value, setValue] = useState("");
+  const handleInputChange = (value) => {
+    setValue(value);
+  };
 
   const handlesubmitSave = async () => {
     let slug = formatVietnameseToString(payload?.name);
     payload.slug = slug;
-
-    let categoryId = addCategory || "";
-    payload.categoryId = categoryId;
 
     let brandId = addBrand || "";
     payload.brandId = brandId;
@@ -175,9 +198,18 @@ const Insert = () => {
 
     let pricesale = addsale;
 
+    //code
     let code = v4();
     payload.imagesId = code;
     payloadImage.code = code;
+    if (addCategory.length > 0 || addCategory !== "") {
+      let categoryId = addCategory || "";
+      payload.categoryId = categoryId;
+    } else {
+      payload.categoryId = "";
+    }
+
+    //end code
 
     payload.pricesale = parseInt(pricesale);
 
@@ -190,7 +222,27 @@ const Insert = () => {
     if (imagesPreview.length === 0) {
       setTyToast(true);
     }
+
+    console.log(payload);
+    // console.log("payload", payload);
+    // console.log("payloadImage", payloadImage);
     if (invalids === 0 && imagesPreview.length !== 0) {
+      for (let i = 0; i < addCategory?.length; i++) {
+        // console.log(addCategory[i]?.name);
+        payloadCate.name = addCategory[i]?.name;
+        payloadCate.product_id = addCategory[i]?._id;
+        payloadCate.imagesId = code;
+        payloadCate.slug = addCategory[i]?.slug;
+        payloadCate.parent_id = addCategory[i]?.parent_id;
+        payloadCate.value = addCategory[i]?.value;
+        payloadCate.status = addCategory[i]?.status;
+        payloadCate.displayorder = addCategory[i]?.displayorder;
+        await apiInsertCate(payloadCate);
+        // console.log("payloadCate", payloadCate);
+      }
+
+      // console.log(payload);
+
       await apiInsertProducts(payload);
       fetchData();
       setImagesPreview([]);
@@ -343,7 +395,22 @@ const Insert = () => {
               )}
             <div className="grid grid-cols-3 gap-2 items-center w-full">
               <p className="text-right col-span-1 font-bold">Categories</p>
-              <select
+              <AsyncSelect
+                cacheOptions
+                defaultOptions
+                value={addCategory}
+                getOptionLabel={(e) => e.name}
+                getOptionValue={(e) => e._id}
+                onInputChange={handleInputChange}
+                loadOptions={fectDataCategory}
+                closeMenuOnSelect={false}
+                isMulti
+                name="colors"
+                onChange={handleAddCategory}
+                className="basic-multi-select"
+                classNamePrefix="select"
+              />
+              {/* <select
                 defaultValue={"DEFAULT"}
                 onChange={(e) => handleAddCategory(e)}
                 className="cursor-pointer px-2 capitalize"
@@ -361,7 +428,7 @@ const Insert = () => {
                         </option>
                       );
                     })}
-              </select>
+              </select> */}
             </div>
             {invalidFields.length > 0 &&
               invalidFields.some((i) => i.name === "categoryId") && (
@@ -556,7 +623,7 @@ const Insert = () => {
                 </option>
                 <option value="10">10%</option>
                 <option value="20">20%</option>
-                <option value="30">20%</option>
+                <option value="30">30%</option>
                 <option value="40">40%</option>
                 <option value="50">50%</option>
                 <option value="60">60%</option>

@@ -50,7 +50,7 @@ const ProductAll = () => {
                       sale
                       slug={items?.slug}
                       name={items?.name}
-                      images={items?.images}
+                      imagesId={items?.imagesId}
                       pricesale={items?.pricesale}
                       price={items?.price}
                     />

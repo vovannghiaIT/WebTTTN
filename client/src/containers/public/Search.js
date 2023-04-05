@@ -40,15 +40,15 @@ const Search = () => {
                     <ItemsProduct
                       slug={items?.slug}
                       name={items?.name}
-                      images={items?.images}
+                      imagesId={items?.imagesId}
                       pricesale={items?.pricesale}
                       price={items?.price}
                     />
                   </div>
                 );
               })}
-          {search.length <= 0 && <NoProduct />}
         </div>
+        {search.length <= 0 && <NoProduct />}
       </div>
     </div>
   );

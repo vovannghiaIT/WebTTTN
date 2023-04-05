@@ -11,6 +11,7 @@ const Header = () => {
     FaShoppingCart,
     AiFillCaretLeft,
     BiRadioCircleMarked,
+    FaUsers,
   } = icons;
   return (
     <div>
@@ -102,10 +103,20 @@ const Header = () => {
             <BiRadioCircleMarked size={25} /> <div>Opera</div>
           </NavLink>
         </div>
-        <div className="py-2 px-4  capitalize text-md-center w-full transition-all flex gap-2 items-center">
+        <Link
+          to="/admin/order"
+          className="py-2 px-4  capitalize text-md-center w-full transition-all flex gap-2 items-center"
+        >
           <FaShoppingCart size={20} />
           <p> Sale</p>
-        </div>
+        </Link>
+        <Link
+          to="/admin/user"
+          className="py-2 px-4  capitalize text-md-center w-full transition-all flex gap-2 items-center"
+        >
+          <FaUsers size={20} />
+          <p> User</p>
+        </Link>
       </div>
     </div>
   );

@@ -1,10 +1,21 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { ItemsImg } from "../../components";
+import * as actions from "../../store/actions";
 
 const CategoryAll = () => {
   const { categories } = useSelector((state) => state.category);
+  const { images } = useSelector((state) => state.image);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const fetchData = async () => {
+    dispatch(actions.getCategories());
+    dispatch(actions.getImages());
+  };
   // console.log(categories);
   return (
     <div className="bg-[#e4e4e4] flex flex-col gap-4 w-full">
@@ -27,7 +38,23 @@ const CategoryAll = () => {
                     key={index}
                   >
                     <div className="w-[25%] md:max-lg:w-[40%] sm:max-md:w-[60%]">
-                      <ItemsImg images={items?.images} />
+                      {images?.length > 0 &&
+                        images
+                          .filter(
+                            (item) =>
+                              item?.status === 1 &&
+                              item?.code === items?.imagesId
+                          )
+                          .map((itemsImg, index) => {
+                            return (
+                              <div
+                                key={index}
+                                className="w-1/2  overflow-hidden"
+                              >
+                                <ItemsImg images={itemsImg?.picture} />
+                              </div>
+                            );
+                          })}
                     </div>
                     <div className="text-start capitalize sm:max-md:text-[10px]">
                       {items?.name.length > 10

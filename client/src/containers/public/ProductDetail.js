@@ -24,6 +24,7 @@ const ProductDetail = () => {
 
   const [count, setCount] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [text, setText] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -31,6 +32,8 @@ const ProductDetail = () => {
 
   const { dataDetail } = useSelector((state) => state.product);
   const { images } = useSelector((state) => state.image);
+  const { brands } = useSelector((state) => state.brand);
+  const { operas } = useSelector((state) => state.opera);
   const goLogin = useCallback((flag) => {
     navigate(path.LOGIN, { state: { flag } });
   }, []);
@@ -49,10 +52,12 @@ const ProductDetail = () => {
     }
   }, [dataDetail]);
 
-  console.log(dataDetail);
+  // console.log(dataDetail);
   const fetchData = async () => {
     dispatch(actions.getProductDetail(payload));
     dispatch(actions.getImages());
+    dispatch(actions.getBrand());
+    dispatch(actions.getOpera());
   };
 
   // if (dataDetail) {
@@ -90,19 +95,19 @@ const ProductDetail = () => {
   const indexs = [0];
 
   const submitCart = async (dataDetail) => {
-    let idCart = dataDetail?.id;
+    let idCart = dataDetail?._id;
     let name = dataDetail?.name;
     let price =
       dataDetail?.pricesale > 0 ? dataDetail?.pricesale : dataDetail?.price;
     let number = count;
-    let img = dataDetail?.images;
+    let img = images.filter((items) => items.code === dataDetail?.imagesId);
     let brands = dataDetail?.brands?.name;
     let Cartnumber = dataDetail?.number;
     // let images = img.filter((i, index) => indexs.some((i) => i === index))
-
+    console.log(img);
     const cartArray = [
       {
-        id: idCart,
+        _id: idCart,
         name: name,
         price: price,
         number: number,
@@ -126,8 +131,8 @@ const ProductDetail = () => {
         let cart = "";
         let cartNumber = "";
         if (cookies.Cart) {
-          let dataCart = cookies?.Cart?.find((item) => item?.id === idCart);
-          let dataList = cookies?.Cart?.filter((item) => item?.id !== idCart);
+          let dataCart = cookies?.Cart?.find((item) => item?._id === idCart);
+          let dataList = cookies?.Cart?.filter((item) => item?._id !== idCart);
           // console.log(dataCart);
           // console.log(dataList);
           if (dataCart) {
@@ -160,7 +165,7 @@ const ProductDetail = () => {
         });
         fetchData();
       } else {
-        toast.warn("Thêm vào giỏ hàng thất bại!", {
+        toast.warn("Sản phẩm đã hết hàng!", {
           position: "top-right",
           autoClose: 1000,
           hideProgressBar: false,
@@ -185,6 +190,8 @@ const ProductDetail = () => {
       }, 1100);
     }
   };
+  let itemBrand = brands?.filter((items) => items._id === dataDetail?.brandId);
+  let itemOpera = operas?.filter((items) => items._id === dataDetail?.operaId);
   return (
     <div>
       {loading ? (
@@ -243,12 +250,12 @@ const ProductDetail = () => {
                       )}
                     </div>
                     <div className="flex gap-2 items-center justify-start">
-                      <span className="sm:max-md:text-[13px]">
+                      {/* <span className="sm:max-md:text-[13px]">
                         Đánh giá: Chưa có
                       </span>
                       <div className="flex items-center justify-start gap-1">
                         {handleStar(dataDetail?.star)}
-                      </div>
+                      </div> */}
                     </div>
                     <div className="flex gap-1">
                       <span className="sm:max-md:text-[13px]">
@@ -351,13 +358,13 @@ const ProductDetail = () => {
                     <li>
                       Thương hiệu:
                       <span className="text-green-500 px-2 ">
-                        {dataDetail?.brands?.name || "Không có"}
+                        {itemBrand[0]?.name || "Không có"}
                       </span>
                     </li>
                     <li>
                       Loại:
                       <span className="text-green-500 px-2">
-                        {dataDetail?.operas?.name || "Không có"}
+                        {itemOpera[0]?.name || "Không có"}
                       </span>
                     </li>
                   </ul>
@@ -380,24 +387,48 @@ const ProductDetail = () => {
                   <li>
                     Thương hiệu:
                     <span className="text-green-500 px-2 ">
-                      {dataDetail?.brands?.name || "Không có"}
+                      {itemBrand[0]?.name || "Không có"}
                     </span>
                   </li>
                   <li>
                     Loại:
                     <span className="text-green-500 px-2">
-                      {dataDetail?.operas?.name || "Không có"}
+                      {itemOpera[0]?.name || "Không có"}
                     </span>
                   </li>
                 </ul>
               </div>
-              <div className="w-[70%] mt-4 sm:max-md:w-full border-2 p-3 rounded-xl ">
+              <div className="w-[70%] mt-4 sm:max-md:w-full border-2 p-3 rounded-xl  relative">
                 <h2>Thông tin chi tiết</h2>
 
-                <div>
-                  {dataDetail?.description &&
-                    parse(dataDetail?.description?.slice(1, -1))}
-                </div>
+                {!text && (
+                  <div>
+                    {dataDetail?.fulldescription &&
+                      parse(dataDetail?.fulldescription[0].slice(0, 600))}
+
+                    {dataDetail?.fulldescription &&
+                      dataDetail?.fulldescription[0]?.length > 600 && (
+                        <button
+                          onClick={() => setText(true)}
+                          className="bg-white shadow-md absolute bottom-[-20px] px-4 py-2  right-[45%] rounded-md"
+                        >
+                          Xem tất cả
+                        </button>
+                      )}
+                  </div>
+                )}
+                {text && (
+                  <div>
+                    {dataDetail?.fulldescription &&
+                      parse(dataDetail?.fulldescription[0])}
+                    <button
+                      onClick={() => setText(false)}
+                      className="bg-white shadow-md absolute bottom-[-20px] px-4 py-2  right-[45%] rounded-md"
+                    >
+                      Thu gọn
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="w-full mt-4 border-2 p-2   rounded-xl">
                 <h2 className="font-semibold">Sản phẩm liên quan</h2>
@@ -410,7 +441,6 @@ const ProductDetail = () => {
               </div>
             </div>
           </div>
-          )
         </>
       )}
     </div>

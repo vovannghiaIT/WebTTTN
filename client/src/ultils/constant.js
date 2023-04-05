@@ -28,10 +28,23 @@ export const path = {
   INSERTPRODUCT: "/product/insert",
   EDITPRODUCT: "/product/edit/:_id",
   TRASHPRODUCT: "/product/trash",
-  //
+
+  //brands
+  INSERTBRAND: "/brand/insert",
+  EDITBRAND: "/brand/edit/:_id",
   TRANSHBRAND: "/brand/trash",
+
+  //opera
+  INSERTOPERA: "/opera/insert",
+  EDITOPERA: "/opera/edit/:_id",
   TRANSHOPERA: "/opera/trash",
+
+  //user
+  INSERTUSER: "/user/insert",
+  EDITUSER: "/user/edit/:_id",
   TRANSHUSER: "/user/trash",
+
+  //order
   TRASHORDER: "/order/trash",
   //client
   PRODUCTDETAIL: "productdetail/:slug",

@@ -12,9 +12,17 @@ const Cart = () => {
   const [cookies, setCookie] = useCookies(["Cart"]);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   // console.log(cookies.Cart);
-
+  const { images } = useSelector((state) => state.image);
   const [dataCart, setDataCart] = useState();
+
+  useEffect(() => {
+    fetchDataImg();
+  }, []);
+  const fetchDataImg = async () => {
+    dispatch(actions.getImages());
+  };
 
   useEffect(() => {
     fetchData();
@@ -25,15 +33,17 @@ const Cart = () => {
   // console.log(dataCart)
 
   const removeCartItem = async (items) => {
+    // console.log(items);
     if (cookies?.Cart) {
-      let cart = dataCart?.filter((item) => item?.id !== items.id);
-      let removeCart = dataCart?.find((item) => item?.id === items.id);
+      let cart = dataCart?.filter((item) => item?._id !== items._id);
+      let removeCart = dataCart?.find((item) => item?._id === items._id);
       let backNumber =
         parseInt(removeCart?.Cartnumber - parseInt(removeCart?.number)) +
         parseInt(removeCart?.number);
-      let img = items?.images;
+      let img = items?.images[0]?.code;
+      // console.log(img);
       setCookie("Cart", [...cart], { path: "/" });
-      await apiUpdateProducts({ ...items, images: img, number: backNumber });
+      await apiUpdateProducts({ ...items, number: backNumber });
       setDataCart([...cart]);
     }
   };
@@ -42,9 +52,9 @@ const Cart = () => {
     window.scrollTo(0, 0);
   };
   const NumberUp = async (items) => {
-    let cartNumber = dataCart?.find((item) => item?.id === items.id);
+    let cartNumber = dataCart?.find((item) => item?._id === items._id);
 
-    let cart = dataCart?.filter((item) => item?.id !== items.id);
+    let cart = dataCart?.filter((item) => item?._id !== items._id);
 
     let numberQty = {
       ...cartNumber,
@@ -86,9 +96,9 @@ const Cart = () => {
     }
   };
   const NumberDown = (items) => {
-    let cartNumber = dataCart?.find((item) => item?.id === items.id);
+    let cartNumber = dataCart?.find((item) => item?._id === items._id);
 
-    let cart = dataCart?.filter((item) => item?.id !== items.id);
+    let cart = dataCart?.filter((item) => item?.__id !== items._id);
 
     let numberQty = {
       ...cartNumber,
@@ -144,7 +154,7 @@ const Cart = () => {
     if (cookies?.Cart) {
       let cart = "";
       for (let i = 0; i < dataCart.length; i++) {
-        cart = dataCart?.filter((items) => items?.id === dataCart[i]?.id);
+        cart = dataCart?.filter((items) => items?._id === dataCart[i]?._id);
         let backNumber = cart[0]?.Cartnumber;
         let img = cart[0]?.images;
         // console.log({ ...cart[0], images: img, number: backNumber }); // api
@@ -158,6 +168,7 @@ const Cart = () => {
       setDataCart("");
     }
   };
+  console.log(cookies);
   return (
     <div>
       <div className=" mx-auto mt-2 w-full ">
@@ -198,19 +209,21 @@ const Cart = () => {
                   >
                     <div className="flex  gap-2">
                       <div className=" w-[50px]  sm:max-md:hidden ">
-                        {items?.images?.length > 0 &&
-                          items?.images
-                            .filter((i, index) =>
-                              indexs.some((i) => i === index)
+                        {images?.length > 0 &&
+                          images
+                            .filter(
+                              (item) =>
+                                item?.status === 1 &&
+                                item?.code === items?.images[0]?.code
                             )
-                            ?.map((i, index) => {
+                            .map((itemsImg, index) => {
                               return (
-                                <img
+                                <div
                                   key={index}
-                                  className="object-cover h-[50px] "
-                                  src={i}
-                                  alt="images cart"
-                                />
+                                  className="w-1/2  overflow-hidden"
+                                >
+                                  <ItemsImg images={itemsImg?.picture} />
+                                </div>
                               );
                             })}
                       </div>

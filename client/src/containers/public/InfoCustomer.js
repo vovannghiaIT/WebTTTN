@@ -37,6 +37,8 @@ const InfoCustomer = () => {
     let data = orders?.filter((items) => items?.userId === currentData?.id);
     setDataOrder(data);
   };
+
+  // console.log(currentData)
   return (
     <div className="bg-[#f1f1f1] w-full">
       <div className="py-1 shadow-lg ">
@@ -80,7 +82,8 @@ const InfoCustomer = () => {
               </Link>
               <div className="w-1/2 p-5 bg-white  flex flex-col gap-2 justify-center items-center relative shadow-10% rounded-xl">
                 <span className="w-8 h-8">
-                  {currentData?.avatar && currentData?.avatar !== "0" ? (
+                  {currentData?.avatar.length > 0 &&
+                  currentData?.avatar !== "0" ? (
                     <ItemsImg images={currentData?.avatar} />
                   ) : (
                     <img src={avatar} alt="avatar" />

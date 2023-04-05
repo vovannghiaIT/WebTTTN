@@ -27,7 +27,7 @@ const ReSetPassword = () => {
 
   const [payload, setPayload] = useState(() => {
     const initData = {
-      id: currentData?.id,
+      _id: currentData?._id,
       firstName: currentData?.firstName || "",
       lastName: currentData?.lastName || "",
       address: currentData?.address || "",
@@ -100,6 +100,7 @@ const ReSetPassword = () => {
           setTimeout(function () {
             navigate("/");
           }, 1100);
+          window.scrollTo({ top: 0, behavior: "smooth" });
         } else {
           toast.warn("Vui lòng nhập có hơn 6 ký tự!", {
             position: "top-right",
@@ -161,7 +162,8 @@ const ReSetPassword = () => {
               </div>
               <div className="w-1/2 p-5 bg-white  flex flex-col gap-2 justify-center items-center relative shadow-10% rounded-xl">
                 <span className="w-8 h-8">
-                  {currentData?.avatar && currentData?.avatar !== "0" ? (
+                  {currentData?.avatar.length > 0 &&
+                  currentData?.avatar !== "0" ? (
                     <ItemsImg images={currentData?.avatar} />
                   ) : (
                     <img src={avatar} alt="avatar" />

@@ -1,34 +1,35 @@
-const OrderdetailModal = require("../models/orderdetail");
+const CateModal = require("../models/cate");
 
 //GET ALL
-export const getOrderdetailAllService = () =>
+export const getCateAllService = () =>
   new Promise(async (resolve, reject) => {
     try {
-      const response = await OrderdetailModal.find({}).sort({
+      const response = await CateModal.find({}).sort({
         create_at: "desc",
         updated_at: "desc",
       });
       resolve({
         err: response ? 0 : 1,
-        msg: response ? "OK" : "Failed to get Orderdetail.",
+        msg: response ? "OK" : "Failed to get cate.",
         response,
       });
     } catch (error) {
       reject(error);
     }
   });
-//Inset
-export const insertOrderdetailService = (body) =>
+//Insert
+export const insertCateService = (body) =>
   new Promise(async (resolve, reject) => {
     try {
       // console.log(body);
-      const newUser = new OrderdetailModal({
+      const newUser = new CateModal({
         name: body.name,
-        orderId: body.orderId,
+        product_id: body.product_id,
+        slug: body.slug,
         imagesId: body.imagesId,
-        price: body.price,
-        quantity: body.quantity,
-        amount: body.amount,
+        parent_id: body.parent_id,
+        value: body.value,
+        displayorder: body.displayorder,
         status: body.status,
         create_by: body.create_by,
         update_by: body.update_by,
@@ -36,7 +37,7 @@ export const insertOrderdetailService = (body) =>
       const response = await newUser.save();
       resolve({
         err: response ? 0 : 1,
-        msg: response ? "OK" : "Failed to get Orderdetail.",
+        msg: response ? "OK" : "Failed to get Cate.",
         response,
       });
     } catch (error) {
@@ -44,20 +45,21 @@ export const insertOrderdetailService = (body) =>
     }
   });
 
-//update User
-export const updateOrderdetailService = (body) =>
+//update
+export const updateCateService = (body) =>
   new Promise(async (resolve, reject) => {
     try {
-      const response = await OrderdetailModal.findByIdAndUpdate(
+      const response = await CateModal.findByIdAndUpdate(
         { _id: body._id },
         {
           $set: {
             name: body.name,
-            orderId: body.orderId,
+            product_id: body.product_id,
+            slug: body.slug,
             imagesId: body.imagesId,
-            price: body.price,
-            quantity: body.quantity,
-            amount: body.amount,
+            parent_id: body.parent_id,
+            displayorder: body.displayorder,
+            value: body.value,
             status: body.status,
             create_by: body.create_by,
             update_by: body.update_by,
@@ -68,7 +70,7 @@ export const updateOrderdetailService = (body) =>
 
       resolve({
         err: response ? 0 : 1,
-        msg: response ? "OK" : "Failed to update Orderdetail.",
+        msg: response ? "OK" : "Failed to update cate.",
         response,
       });
     } catch (error) {
@@ -76,16 +78,15 @@ export const updateOrderdetailService = (body) =>
     }
   });
 
-//GET ALL
-export const deleteOrderdetailServices = (body) =>
+export const deleteCateServices = (body) =>
   new Promise(async (resolve, reject) => {
     try {
-      const response = await OrderdetailModal.findByIdAndRemove({
+      const response = await CateModal.findByIdAndRemove({
         _id: body._id,
       });
       resolve({
         err: response ? 0 : 1,
-        msg: response ? "OK" : "Failed to delete Orderdetail.",
+        msg: response ? "OK" : "Failed to delete cate.",
         response,
       });
     } catch (error) {

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import * as actions from "../../store/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { ItemsProduct, NoProduct } from "../../components";
@@ -24,10 +24,15 @@ import "swiper/css/grid";
 import { useParams } from "react-router-dom";
 
 const ProductCategory = ({ categoryId, productSlug }) => {
-  // console.log(productSlug);
-  let slug = productSlug ? productSlug : "";
-  let itemId = categoryId ? categoryId : "";
+  // console.log("productSlug", productSlug);
+
   const { products } = useSelector((state) => state.product);
+  const { cates } = useSelector((state) => state.cate);
+
+  const [dataCate, setDataCate] = useState([]);
+
+  let slug = productSlug ? productSlug : "";
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -35,16 +40,30 @@ const ProductCategory = ({ categoryId, productSlug }) => {
   }, []);
   const fetchData = async () => {
     dispatch(actions.getProduct());
+    dispatch(actions.getCate());
   };
 
   useEffect(() => {
     feachDataDetail();
+    fectchCate();
   }, []);
 
   const feachDataDetail = (slug) => {
     let payload = slug;
     dispatch(actions.getProductDetail(payload));
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const fectchCate = () => {
+    let itemId =
+      cates?.filter((items) => items.product_id === categoryId) || "";
+    console.log("itemId", itemId);
+    for (let i = 0; i < itemId.length; i++) {
+      const dataProduct = products?.filter(
+        (items) => items?.categoryId === itemId[i]?.product_id
+      );
+      console.log("dataProduct", dataProduct);
+    }
   };
 
   return (
@@ -83,7 +102,7 @@ const ProductCategory = ({ categoryId, productSlug }) => {
         modules={[Keyboard, Scrollbar, Navigation, Pagination, Grid]}
         className="mySwiper"
       >
-        {products.filter(
+        {/* {products.filter(
           (item) =>
             item.categoryId === itemId &&
             item.status === 1 &&
@@ -116,7 +135,7 @@ const ProductCategory = ({ categoryId, productSlug }) => {
                   );
                 })}
           </>
-        )}
+        )} */}
       </Swiper>
     </div>
   );

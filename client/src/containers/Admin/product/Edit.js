@@ -5,6 +5,8 @@ import icons from "../../../ultils/icons";
 import * as actions from "../../../store/actions";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  apiInsertCate,
+  apiUpdateCate,
   apiUpdateImages,
   apiUpdateProducts,
   apiUploadImages,
@@ -16,6 +18,7 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { Loading } from "../../../components";
 import { formatVietnameseToString } from "../../../ultils/Common/formatVietnameseToString";
 import { toast } from "react-toastify";
+import AsyncSelect from "react-select/async";
 
 const Edit = () => {
   const [loading, setLoading] = useState(false);
@@ -25,10 +28,12 @@ const Edit = () => {
   const [addsale, setAddsale] = useState(0);
   const [dataEdit, setDataEdit] = useState([]);
   const [check, setCheck] = useState(false);
+  const [Value, setValue] = useState("");
 
   // console.log(check);
 
   const [addCategory, setAddCategory] = useState([]);
+  const [addDefaultCategory, setAddDefaultCategory] = useState([]);
   const [addBrand, setAddBrand] = useState([]);
   const [addOpera, setAddOpera] = useState([]);
   const [dataDescription, setDataDescription] = useState();
@@ -43,9 +48,11 @@ const Edit = () => {
   const { categories } = useSelector((state) => state.category);
   const { operas } = useSelector((state) => state.opera);
   const { brands } = useSelector((state) => state.brand);
+  const { cates } = useSelector((state) => state.cate);
 
   useEffect(() => {
     fetchData();
+    fectDataCategory();
   }, []);
 
   useEffect(() => {
@@ -57,6 +64,7 @@ const Edit = () => {
     dispatch(actions.getCategories());
     dispatch(actions.getImages());
     dispatch(actions.getProduct());
+    dispatch(actions.getCate());
   };
 
   const fetchDataProduct = async () => {
@@ -65,8 +73,8 @@ const Edit = () => {
     setDataEdit(dataProduct[0]);
   };
 
-  const handleAddCategory = (e) => {
-    setAddCategory(e.target.value);
+  const handleAddCategory = (value) => {
+    setAddCategory(value);
   };
   const handleAddBrands = (e) => {
     setAddBrand(e.target.value);
@@ -89,7 +97,6 @@ const Edit = () => {
       fulldescription: dataEdit?.fulldescription || "",
       number: dataEdit?.number || "",
       price: dataEdit?.price || "",
-
       displayorder: dataEdit?.displayorder || 0,
       new: dataEdit?.new || 0,
       showonhomepage: dataEdit?.showonhomepage || 0,
@@ -114,18 +121,27 @@ const Edit = () => {
         fulldescription: dataEdit?.fulldescription || "",
         number: dataEdit?.number || "",
         price: dataEdit?.price || "",
-
         displayorder: dataEdit?.displayorder || 0,
         new: dataEdit?.new || 0,
         showonhomepage: dataEdit?.showonhomepage || 0,
         pricesale: dataEdit?.pricesale || 0,
         status: dataEdit?.status || 1,
       });
-      setAddCategory(dataEdit?.categoryId || "");
       setAddBrand(dataEdit?.brandId || "");
       setAddOpera(dataEdit?.operaId || "");
-      setAddsale(dataEdit?.pricesale || "");
+      setAddsale(dataEdit?.pricesale || 0);
       setCheck(dataEdit.pricesale > 0 ? true : false);
+
+      for (let y = 0; y < cates?.length; y++) {
+        let dataCate = dataEdit?.categoryId;
+        let cate = cates[y]?.product_id;
+        console.log("dataCate", dataCate);
+        console.log("cate", cate);
+      }
+
+      // console.log("cates", cates);
+
+      // setAddCategory(cate);
 
       let img = images.filter((items) => items?.code === dataEdit?.imagesId);
 
@@ -141,6 +157,17 @@ const Edit = () => {
     displayorder: "",
     alt: "",
     title: "",
+    status: 1,
+  });
+  const [payloadCate, setPayloadCate] = useState({
+    _id: "",
+    name: "",
+    product_id: "",
+    slug: "",
+    imagesId: "",
+    parent_id: "",
+    displayorder: "",
+    value: "",
     status: 1,
   });
 
@@ -202,10 +229,18 @@ const Edit = () => {
     setAddsale(e.target.value);
   };
 
+  const fectDataCategory = async () => {
+    return categories;
+  };
+
+  const handleInputChange = (value) => {
+    setValue(value);
+  };
   const handlesubmitSave = async () => {
     let img = images?.filter((items) => items?.code === dataEdit?.imagesId);
     let idImages = img[0]?._id || "";
 
+    // console.log(payload);
     // console.log("img", img);
     let codeImages = img[0]?.code || "";
     payloadImage._id = idImages;
@@ -214,19 +249,48 @@ const Edit = () => {
 
     let pricesale = addsale;
     payload.pricesale = pricesale;
+    if (addCategory.length > 0 || addCategory !== "") {
+      let categoryId = addCategory || "";
+      payload.categoryId = categoryId;
+    } else {
+      payload.categoryId = "";
+    }
+    console.log(addCategory);
 
-    let slug = formatVietnameseToString(dataEdit?.name);
+    let slug = formatVietnameseToString(payload.name);
     payload.slug = slug;
+    let fulldescription = dataDescription
+      ? dataDescription
+      : dataEdit?.fulldescription;
+    payload.fulldescription = fulldescription;
     let invalids = validate(payload);
     if (imagesPreview?.length === 0) {
       setTyToast(true);
     }
 
-    // console.log(invalids);
-
+    // console.log("payload", payload);
+    // console.log("payloadImage", payloadImage);
     if (invalids === 0 && payload && payloadImage) {
-      // console.log(payload);
-      // console.log(payloadImage);
+      for (let i = 0; i < addCategory?.length; i++) {
+        payloadCate.name = addCategory[i]?.name;
+        payloadCate.product_id = addCategory[i]?.product_id;
+        payloadCate.imagesId = dataEdit?.imagesId;
+        payloadCate.slug = addCategory[i]?.slug;
+        payloadCate.parent_id = addCategory[i]?.parent_id;
+        payloadCate.value = addCategory[i]?.value;
+        payloadCate.status = addCategory[i]?.status;
+        payloadCate.displayorder = addCategory[i]?.displayorder;
+        if (payloadCate.product_id) {
+          payloadCate._id = addCategory[i]?._id;
+          await apiUpdateCate(payloadCate);
+          // console.log("payloadCate", payloadCate);
+        } else {
+          payloadCate.product_id = dataEdit?.categoryId;
+          await apiInsertCate(payloadCate);
+          // console.log("payloadCate", payloadCate);
+        }
+        // console.log("addCategory", addCategory);
+      }
       await apiUpdateProducts(payload);
       await apiUpdateImages(payloadImage);
       fetchData();
@@ -334,7 +398,7 @@ const Edit = () => {
               <p className="text-right col-span-1 font-bold">
                 Full description
               </p>
-              <span className="col-span-2">
+              <span className="col-span-2  ">
                 <CKEditor
                   editor={ClassicEditor}
                   data={payload?.fulldescription[0]}
@@ -356,7 +420,22 @@ const Edit = () => {
               )}
             <div className="grid grid-cols-3 gap-2 items-center w-full">
               <p className="text-right col-span-1 font-bold">Categories</p>
-              <select
+              <AsyncSelect
+                cacheOptions
+                defaultOptions
+                value={addCategory}
+                getOptionLabel={(e) => e.name}
+                getOptionValue={(e) => e._id}
+                onInputChange={handleInputChange}
+                loadOptions={fectDataCategory}
+                closeMenuOnSelect={false}
+                isMulti
+                name="colors"
+                onChange={handleAddCategory}
+                className="basic-multi-select"
+                classNamePrefix="select"
+              />
+              {/* <select
                 onChange={(e) => handleAddCategory(e)}
                 className="cursor-pointer px-2 capitalize"
                 defaultValue={dataEdit?.categoryId}
@@ -374,7 +453,7 @@ const Edit = () => {
                         </option>
                       );
                     })}
-              </select>
+              </select> */}
             </div>
             {invalidFields.length > 0 &&
               invalidFields.some((i) => i.name === "categoryId") && (

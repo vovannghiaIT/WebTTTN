@@ -1,59 +1,32 @@
 const mongoose = require("mongoose");
 
-const ProductsSchema = new mongoose.Schema(
+const CateSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
     },
-    categoryId: [
+    product_id: [
       {
         type: String,
       },
     ],
-    operaId: {
-      type: String,
-      required: true,
-    },
-    brandId: {
+    slug: {
       type: String,
       required: true,
     },
     imagesId: {
       type: String,
-    },
-    star: {
-      type: Number,
-    },
-    slug: {
-      type: String,
       required: true,
     },
-    shortdescription: {
+    parent_id: {
       type: String,
-    },
-    fulldescription: [
-      {
-        type: String,
-      },
-    ],
-    number: {
-      type: Number,
-    },
-    price: {
-      type: Number,
-    },
-    pricesale: {
-      type: Number,
-    },
-    new: {
-      type: Number,
     },
     displayorder: {
       type: Number,
     },
-    showonhomepage: {
-      type: Number,
+    value: {
+      type: String,
     },
     status: {
       type: Number,
@@ -74,5 +47,5 @@ const ProductsSchema = new mongoose.Schema(
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );
 
-const ProductModal = mongoose.model("products", ProductsSchema);
-module.exports = ProductModal;
+const CateModal = mongoose.model("cate", CateSchema);
+module.exports = CateModal;
