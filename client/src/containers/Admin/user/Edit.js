@@ -3,8 +3,13 @@ import { useDispatch } from "react-redux";
 import icons from "../../../ultils/icons";
 import * as action from "../../../store/actions";
 import data from "../../../ultils/Common/data.json";
-import { apiUpdateUsers, apiUploadImages } from "../../../services";
+import {
+  apiUpdateUsers,
+  apiUpdateUsersOld,
+  apiUploadImages,
+} from "../../../services";
 import { Loading } from "../../../components";
+import { toast } from "react-toastify";
 
 const Edit = ({ modal, setModal, dataEdit }) => {
   // console.log(dataEdit);
@@ -30,11 +35,11 @@ const Edit = ({ modal, setModal, dataEdit }) => {
   const [invalidFields, setInvalidFields] = useState([]);
   const [payload, setPayload] = useState(() => {
     const initData = {
-      id: "",
+      _id: "",
       firstName: dataEdit?.firstName || "",
       lastName: dataEdit?.lastName || "",
       address: dataEdit?.address || "",
-      password: dataEdit?.password || "",
+      password: "",
       email: dataEdit?.email || "",
       avatar: dataEdit?.avatar || null,
       phone: dataEdit?.phone || "",
@@ -49,11 +54,11 @@ const Edit = ({ modal, setModal, dataEdit }) => {
   useEffect(() => {
     if (modal === true) {
       setPayload({
-        id: "",
+        _id: "",
         firstName: dataEdit?.firstName || "",
         lastName: dataEdit?.lastName || "",
         address: dataEdit?.address || "",
-        password: dataEdit?.password || "",
+        password: "",
         email: dataEdit?.email || "",
         avatar: dataEdit?.avatar || null,
         phone: dataEdit?.phone || "",
@@ -144,13 +149,30 @@ const Edit = ({ modal, setModal, dataEdit }) => {
     let addressvalue = dataCity + "," + IdDistricts + "," + idWard;
 
     payload.address = dataEdit?.address === "" ? payload.address : addressvalue;
-    let id = dataEdit?.id;
-    payload.id = id;
+    let _id = dataEdit?._id;
+    payload._id = _id;
     // console.log(payload)
-    await apiUpdateUsers(payload);
+    if (payload?.password) {
+      await apiUpdateUsers(payload);
+      console.log(1);
+    } else {
+      payload.password = dataEdit?.password;
+      await apiUpdateUsersOld(payload);
+      console.log(0);
+    }
     fetchData();
     setImagesPreview([]);
     setModal(false);
+    toast.success("cập nhật thông tin người dùng  thành công", {
+      position: "top-right",
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   };
 
   return (

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { ItemsImg, NoProduct } from "../../components";
 import { v4 } from "uuid";
 import data from "../../ultils/Common/data.json";
@@ -31,6 +31,9 @@ const Payment = () => {
     text: "",
   });
   const { images } = useSelector((state) => state.image);
+  const [dataPriceSale, setDataPriceSale] = useState(0);
+  const [total, setTotal] = useState();
+  const param = useParams();
   // address
   const [dataAddress, setDataAddress] = useState();
   const [dataCity, setDataCity] = useState();
@@ -46,7 +49,7 @@ const Payment = () => {
   // add pay
   const { currentData } = useSelector((state) => state.user);
   const [email, setEmail] = useState({
-    user_name: currentData?.firstName + currentData?.lastName,
+    to_name: currentData?.firstName + currentData?.lastName,
     user_email: currentData?.email || "",
     message: "Bạn đã đặt hàng thành công!",
   });
@@ -70,12 +73,13 @@ const Payment = () => {
     deliveryphone: currentData?.phone,
     deliveryemail: currentData?.email || "",
     value: "",
+    sumtotal: 0,
     status: 1,
   });
 
   useEffect(() => {
     setEmail({
-      user_name: currentData?.firstName + currentData?.lastName,
+      to_name: currentData?.firstName + currentData?.lastName,
       user_email: currentData?.email || "",
       message: "Bạn đã đặt hàng thành công!",
     });
@@ -89,6 +93,7 @@ const Payment = () => {
       deliveryphone: currentData?.phone || "",
       deliveryemail: currentData?.email || "",
       value: "không",
+      sumtotal: 0,
       status: 1,
     });
   }, [currentData]);
@@ -106,6 +111,7 @@ const Payment = () => {
   //Cart
   useEffect(() => {
     fetchData();
+    totalCart();
   }, [dataCart]);
   const fetchData = () => {
     setDataCart(cookies?.Cart);
@@ -147,13 +153,22 @@ const Payment = () => {
       setDataWards();
     }
   };
-  let total = 0;
+
+  let price = param?.price;
+
   const totalCart = () => {
+    setDataPriceSale(parseInt(price.slice(6)));
+    let sum = 0;
     dataCart?.length > 0 &&
       dataCart?.map((item) => {
-        return (total += item.price * item.number);
+        return (sum += item.price * item.number);
       });
-    return numberWithCommas(total);
+    console.log("sum", sum);
+    if (sum < dataPriceSale) {
+      setTotal(0);
+    } else {
+      setTotal(parseInt(sum - dataPriceSale));
+    }
   };
 
   const submitPay = async () => {
@@ -197,13 +212,14 @@ const Payment = () => {
       });
     }
     if (invalidsOrder === 0 && dataCart && dataCity && IdDistricts && idWard) {
+      payloadOrder.sumtotal = total;
       await apiInsertOrders(payloadOrder);
       for (let i = 0; i < dataCart.length; i++) {
         payloadDetail.name = dataCart[i]?.name;
         payloadDetail.price = dataCart[i]?.price;
         payloadDetail.quantity = dataCart[i]?.number;
         payloadDetail.imagesId = dataCart[i]?.images[0]?.code;
-        payloadDetail.orderId = payloadOrder?._id;
+        payloadDetail.orderId = payloadOrder?.code;
         // console.log("payloadDetail", payloadDetail);
         await apiInsertOrderDetails(payloadDetail);
       }
@@ -364,7 +380,7 @@ const Payment = () => {
                   }));
                   setPayloadOrder((prev) => ({
                     ...prev,
-                    ["delivername"]: e.target.value,
+                    ["deliveryname"]: e.target.value,
                   }));
                 }}
                 onFocus={() => setInvalidFields([])}
@@ -623,7 +639,9 @@ const Payment = () => {
           </div>
           <div className="flex justify-between items-center mt-2 px-2">
             <span> Tổng cộng</span>
-            <span className="text-blue-500">{totalCart()}</span>
+            <span className="text-blue-500">
+              {total && numberWithCommas(total)} đ
+            </span>
           </div>
         </div>
       </div>

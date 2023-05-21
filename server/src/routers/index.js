@@ -10,6 +10,8 @@ import currentRouter from "./current";
 import searchRouter from "./search";
 import imagesRouter from "./images";
 import cateRouter from "./cate";
+import voucherRouter from "./voucher";
+import dashboashRouter from "./dashbroash";
 
 const initRouters = (app) => {
   app.use("/api/v1/user", userRouter);
@@ -23,6 +25,8 @@ const initRouters = (app) => {
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/images", imagesRouter);
   app.use("/api/v1/cate", cateRouter);
+  app.use("/api/v1/voucher", voucherRouter);
+  app.use("/api/v1/dash", dashboashRouter);
 
   app.use("/api/v1", searchRouter);
   return app.use("/", (req, res) => {

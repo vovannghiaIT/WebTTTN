@@ -222,13 +222,13 @@ const Edit = () => {
     <div className="p-4 ">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4 ">
-          <h1 className="text-xl font-semibold">Edit a new category</h1>
+          <h1 className="text-xl font-semibold">Cập nhật loại sản phẩm</h1>
           <button
             onClick={() => navigate(-1)}
             className="text-blue-400 flex items-center gap-1 cursor-pointer"
           >
             <GrFormPreviousLink size={15} />
-            back to category list
+            Trở về
           </button>
         </div>
         <div className="flex gap-2 items-center">
@@ -249,11 +249,11 @@ const Edit = () => {
       <div className="bg-white border-t-4 mt-3 rounded-md border-t-blue-300">
         <div className="p-2">
           <h1 className="capitalize text-lg border-b px-4 py-2 ">
-            Category Info
+            Thông tin loại sản phẩm
           </h1>
           <div className="p-5 flex flex-col gap-3 justify-center items-center">
             <div className="grid grid-cols-3 gap-2 items-center w-full">
-              <p className="text-right col-span-1 font-bold">Name</p>
+              <p className="text-right col-span-1 font-bold">Tên</p>
               <input
                 type="text"
                 id="name"
@@ -276,7 +276,7 @@ const Edit = () => {
               )}
 
             <div className="grid  grid-cols-3 gap-2 items-center w-full   max-h-[230px] overflow-auto">
-              <p className="text-right col-span-1 font-bold">Description</p>
+              <p className="text-right col-span-1 font-bold">Mô tả</p>
               <span className="col-span-2">
                 <CKEditor
                   editor={ClassicEditor}
@@ -296,7 +296,7 @@ const Edit = () => {
                 </small>
               )}
             <div className="grid grid-cols-3 gap-2 items-center w-full">
-              <p className="text-right col-span-1 font-bold">Parent</p>
+              <p className="text-right col-span-1 font-bold">Cấp cha</p>
               <select
                 defaultValue={dataEdit?.parent_id}
                 onChange={(e) => handleAddCategory(e)}
@@ -331,7 +331,7 @@ const Edit = () => {
         <div className="p-2">
           <h1 className="capitalize text-lg border-b px-4 py-2 ">Display</h1>
           <div className="grid grid-cols-3 gap-2 items-center w-full mt-2">
-            <p className="text-right col-span-1 font-bold">Display order</p>
+            <p className="text-right col-span-1 font-bold">Thứ tự hiển thị</p>
             <input
               className="border col-span-2 px-4 py-2  "
               onFocus={() => setInvalidFields([])}
@@ -351,7 +351,7 @@ const Edit = () => {
               </small>
             )}
           <div className="grid grid-cols-3 gap-2 items-center w-full mt-2">
-            <p className="text-right col-span-1 font-bold">Status</p>
+            <p className="text-right col-span-1 font-bold">Trạng thái</p>
             <p className="text-left">
               {payload?.status === 1 ? (
                 <input
@@ -385,10 +385,10 @@ const Edit = () => {
       </div>
       <div className="bg-white border-t-4 mt-3 rounded-md border-t-blue-300">
         <div className="p-2">
-          <h1 className="capitalize text-lg border-b px-4 py-2 ">Picture</h1>
+          <h1 className="capitalize text-lg border-b px-4 py-2 ">Hình ảnh</h1>
           <div className="p-5 flex flex-col gap-3 justify-center items-center">
             <span className="border w-full  border-gray-300 text-center capitalize px-4 py-2">
-              Picture
+              Hình ảnh
             </span>
 
             <div className="mt-2  grid grid-cols-5 overflow-y-auto">
@@ -415,11 +415,11 @@ const Edit = () => {
         </div>
         <div className="flex w-full items-center justify-end p-3  ">
           {loading ? (
-            <p>loading...</p>
+            <p>Đang tải hình lên...</p>
           ) : (
             <label className=" flex flex-col items-center  bg-white mb-2 text-blue rounded-lg shadow-lg tracking-wide  border border-blue-500 cursor-pointer hover:bg-blue-500 hover:text-white">
               <span className="px-4 py-2 text-base leading-normal capitalize">
-                Upload File
+                chọn hình
               </span>
               <input
                 type="file"

@@ -13,7 +13,26 @@ export const getSearchService = (body) =>
       });
       resolve({
         err: response ? 0 : 1,
-        msg: response ? "OK" : "Failed to get brand.",
+        msg: response ? "OK" : "Failed to get search.",
+        response,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+export const getSearchServiceProduct = (body) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      //   console.log(body.key);
+      const response = await ProductModal.find({
+        name: { $regex: body.name, $options: "i" },
+      }).sort({
+        create_at: "desc",
+        updated_at: "desc",
+      });
+      resolve({
+        err: response ? 0 : 1,
+        msg: response ? "OK" : "Failed to get search.",
         response,
       });
     } catch (error) {

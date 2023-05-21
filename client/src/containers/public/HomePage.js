@@ -429,7 +429,7 @@ const HomePage = () => {
           <ItemsContext text={"Điện thoại nổi bật"} left slug="đien-thoai" />
         </div>
         <div>
-          <ItemsContext text={"Lattop hot"} right slug="may-tinh" />
+          <ItemsContext text={"Lattop hot"} right slug="lap-top" />
         </div>
       </div>
     </div>

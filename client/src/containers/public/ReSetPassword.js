@@ -8,13 +8,17 @@ import bcrypt from "bcryptjs";
 import { toast } from "react-toastify";
 import { apiUpdateUsers } from "../../services";
 import * as action from "../../store/actions";
+import OrderNumbertrack from "../../components/OrderNumbertrack";
 
 const ReSetPassword = () => {
   const { currentData } = useSelector((state) => state.user);
+  const { orders } = useSelector((state) => state.order);
+  const [dataOrder, setDataOrder] = useState([]);
   const dispatch = useDispatch();
 
   const fetchData = async () => {
     dispatch(action.getCurrent());
+    dispatch(action.getOrder());
   };
   const navigate = useNavigate();
   const { AiOutlineHome, AiFillEyeInvisible, AiFillEye } = icons;
@@ -135,6 +139,14 @@ const ReSetPassword = () => {
       });
     }
   };
+  useEffect(() => {
+    fectchOrder();
+  }, [orders]);
+
+  const fectchOrder = () => {
+    let data = orders?.filter((items) => items?.userId === currentData?._id);
+    setDataOrder(data);
+  };
   return (
     <div className="bg-[#f1f1f1] w-full">
       <div className="py-1 shadow-lg ">
@@ -156,8 +168,8 @@ const ReSetPassword = () => {
                 <span className="font-semibold text-[14px]  sm:max-md:text-[11px]">
                   Lịch sử đơn hàng
                 </span>
-                <span className="absolute top-[40%] right-[45%] text-center bg-red-600 rounded-xl w-[20px] h-[20px] leading-[20px] text-white text-[9px] ">
-                  0
+                <span>
+                  <OrderNumbertrack dataOrder={dataOrder} />
                 </span>
               </div>
               <div className="w-1/2 p-5 bg-white  flex flex-col gap-2 justify-center items-center relative shadow-10% rounded-xl">

@@ -105,14 +105,14 @@ const HomeCategory = () => {
   return (
     <div className="p-5 grid gap-4">
       <div className="flex justify-between items-center">
-        <h1 className="capitalize text-xl font-semibold">Category</h1>
+        <h1 className="capitalize text-xl font-semibold">Loại sản phẩm</h1>
         <div className="flex gap-2 items-center">
           <Link
             to="/admin/category/insert"
             className="flex gap-2 items-center bg-blue-500 px-4 py-2 rounded-md hover:opacity-[80%]  opacity-[100%] "
           >
             <BiPlusCircle size={20} color="white" />
-            <span className="text-white"> Add new</span>
+            <span className="text-white"> Thêm mới</span>
           </Link>
           <button
             className="flex gap-2 items-center bg-red-500 px-4 py-2 rounded-md hover:opacity-[80%]  opacity-[100%] "
@@ -120,7 +120,7 @@ const HomeCategory = () => {
           >
             <BiTrash size={20} color="white" />
             <span className="text-white">
-              Delete(selected) <span>{check.length} </span>
+              Xóa(chọn) <span>{check.length} </span>
             </span>
           </button>
         </div>
@@ -130,7 +130,7 @@ const HomeCategory = () => {
           <span>
             <FiSearch size={23} />
           </span>
-          Search
+          Tìm kiếm
         </h1>
         <RiArrowDropDownFill size={35} />
       </div>
@@ -165,20 +165,20 @@ const HomeCategory = () => {
               )} */}
               </th>
               <th className="border border-gray-300 text-center capitalize px-4 py-2">
-                Picture
+                Hình ảnh
               </th>
               <th className="border border-gray-300 text-center capitalize px-4 py-2">
-                name
+                Tên
               </th>
 
               <th className="border border-gray-300 text-center capitalize px-4 py-2">
-                Status
+                Trạng thái
               </th>
               <th className="border border-gray-300 text-center capitalize px-4 py-2">
-                Display Order
+                Thứ tự hiển thị
               </th>
               <th className="border border-gray-300 text-center capitalize px-4 py-2">
-                edit
+                Cập nhật
               </th>
             </tr>
           </thead>

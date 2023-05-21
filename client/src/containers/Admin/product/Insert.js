@@ -8,7 +8,10 @@ import {
   apiInsertProducts,
   apiUploadImages,
 } from "../../../services";
-import { formatVietnameseToString } from "../../../ultils/Common/formatVietnameseToString";
+import {
+  formatVietnameseToString,
+  numberWithCommas,
+} from "../../../ultils/Common/formatVietnameseToString";
 import icons from "../../../ultils/icons";
 import * as actions from "../../../store/actions";
 import { v4 } from "uuid";
@@ -101,8 +104,8 @@ const Insert = () => {
     status: 1,
   });
 
-  const handleAddCategory = (value) => {
-    setAddCategory(value);
+  const handleAddCategory = (e) => {
+    setAddCategory(e.target.value);
   };
   const handleAddBrands = (e) => {
     setAddBrand(e.target.value);
@@ -202,13 +205,9 @@ const Insert = () => {
     let code = v4();
     payload.imagesId = code;
     payloadImage.code = code;
-    if (addCategory.length > 0 || addCategory !== "") {
-      let categoryId = addCategory || "";
-      payload.categoryId = categoryId;
-    } else {
-      payload.categoryId = "";
-    }
-
+    let categoryId = addCategory || "";
+    payload.categoryId = categoryId;
+    // console.log(payload);
     //end code
 
     payload.pricesale = parseInt(pricesale);
@@ -223,24 +222,7 @@ const Insert = () => {
       setTyToast(true);
     }
 
-    console.log(payload);
-    // console.log("payload", payload);
-    // console.log("payloadImage", payloadImage);
     if (invalids === 0 && imagesPreview.length !== 0) {
-      for (let i = 0; i < addCategory?.length; i++) {
-        // console.log(addCategory[i]?.name);
-        payloadCate.name = addCategory[i]?.name;
-        payloadCate.product_id = addCategory[i]?._id;
-        payloadCate.imagesId = code;
-        payloadCate.slug = addCategory[i]?.slug;
-        payloadCate.parent_id = addCategory[i]?.parent_id;
-        payloadCate.value = addCategory[i]?.value;
-        payloadCate.status = addCategory[i]?.status;
-        payloadCate.displayorder = addCategory[i]?.displayorder;
-        await apiInsertCate(payloadCate);
-        // console.log("payloadCate", payloadCate);
-      }
-
       // console.log(payload);
 
       await apiInsertProducts(payload);
@@ -395,7 +377,7 @@ const Insert = () => {
               )}
             <div className="grid grid-cols-3 gap-2 items-center w-full">
               <p className="text-right col-span-1 font-bold">Categories</p>
-              <AsyncSelect
+              {/* <AsyncSelect
                 cacheOptions
                 defaultOptions
                 value={addCategory}
@@ -409,8 +391,9 @@ const Insert = () => {
                 onChange={handleAddCategory}
                 className="basic-multi-select"
                 classNamePrefix="select"
-              />
-              {/* <select
+              /> */}
+
+              <select
                 defaultValue={"DEFAULT"}
                 onChange={(e) => handleAddCategory(e)}
                 className="cursor-pointer px-2 capitalize"
@@ -428,7 +411,7 @@ const Insert = () => {
                         </option>
                       );
                     })}
-              </select> */}
+              </select>
             </div>
             {invalidFields.length > 0 &&
               invalidFields.some((i) => i.name === "categoryId") && (

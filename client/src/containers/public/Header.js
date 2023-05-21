@@ -2,7 +2,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import logo from "../../assets/img/logo.png";
 import logo_mobi from "../../assets/img/logo_mobi.png";
 import icons from "../../ultils/icons";
-import { useNavigate, Link, createSearchParams } from "react-router-dom";
+import {
+  useNavigate,
+  Link,
+  createSearchParams,
+  useParams,
+} from "react-router-dom";
 import { path } from "../../ultils/constant";
 import { useSelector, useDispatch } from "react-redux";
 import * as actions from "../../store/actions";
@@ -21,7 +26,7 @@ const {
 const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const params = useParams();
   const goLogin = useCallback((flag) => {
     navigate(path.LOGIN, { state: { flag } });
   }, []);
@@ -39,6 +44,8 @@ const Header = () => {
   const fetchData = async () => {
     dispatch(actions.getCategories());
   };
+  const { search } = useSelector((state) => state.search);
+  const [valueHidden, setValueHidden] = useState(false);
   //Panginate
   const [itemOffset, setItemOffset] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -65,11 +72,41 @@ const Header = () => {
           key: valueSearch,
         }).toString(),
       });
+      setValueHidden(false);
     }
   };
 
+  useEffect(() => {
+    fetchSearch();
+    hiddenChange();
+  }, []);
+
+  let payload = params?.slug;
+  useEffect(() => {
+    fectDetail();
+  }, [payload]);
+
+  const fetchSearch = async () => {
+    let search = valueSearch;
+    dispatch(actions.getSearchProduct(search));
+  };
   const submitSearchValue = (e) => {
     setValueSearch(e.target.value);
+    setValueHidden(true);
+    if (valueSearch) {
+      fetchSearch();
+    }
+    // console.log(search);
+  };
+
+  const fectDetail = () => {
+    dispatch(actions.getProductDetail(payload));
+  };
+  const hiddenChange = async () => {
+    setValueSearch("");
+    setValueHidden(false);
+
+    // console.log(payload);
   };
   const indexs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
   return (
@@ -109,8 +146,26 @@ const Header = () => {
                 <FiSearch />
               </button>
             </label>
+            <div className="bg-white w-[250px]   text-slate-800 absolute top-[55px] z-[900] flex justify-center gap-2 flex-col">
+              {valueHidden &&
+                search?.length > 0 &&
+                search
+                  .filter((item) => item.status === 1)
+                  .map((items, index) => {
+                    return (
+                      <Link
+                        key={index}
+                        to={"productdetail/" + items?.slug}
+                        onClick={() => hiddenChange()}
+                        className="p-1 border-b cursor-pointer hover:opacity-70"
+                      >
+                        {items?.name}
+                      </Link>
+                    );
+                  })}
+            </div>
           </div>
-          <div className="w-[25%] flex  items-center sm:max-md:hidden ">
+          <div className="w-[25%] flex  items-center sm:max-md:hidden  ">
             <span className="text-[13px] w-[100px] text-center pr-1 border-r-2 border-red-300 hover:text-yellow-300 cursor-pointer">
               24h
               <br /> Công nghệ

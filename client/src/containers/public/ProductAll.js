@@ -10,7 +10,7 @@ const ProductAll = () => {
 
   //PanginateProduct
   const [itemOffsetProduct, setItemOffsetProduct] = useState(0);
-  const [itemsPerPageProduct, setItemsPerPageProduct] = useState(12);
+  const [itemsPerPageProduct, setItemsPerPageProduct] = useState(6);
 
   const endOffsetProduct = itemOffsetProduct + itemsPerPageProduct;
   const currentItemsProduct = products
@@ -22,7 +22,7 @@ const ProductAll = () => {
     if (itemsPerPageProduct < data.length) {
       setItemsPerPageProduct(itemsPerPageProduct + 6);
     } else {
-      setItemsPerPageProduct(12);
+      setItemsPerPageProduct(6);
       window.scrollTo({ top: 0, behavior: "smooth" });
       // console.log(1);
     }

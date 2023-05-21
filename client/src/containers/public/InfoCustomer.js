@@ -9,6 +9,7 @@ import { InFoUser, ItemsImg } from "../../components";
 import EditInfoUser from "../../components/EditInfoUser";
 import avatar from "../../assets/avatar.png";
 import { path } from "../../ultils/constant";
+import OrderNumbertrack from "../../components/OrderNumbertrack";
 
 const InfoCustomer = () => {
   const { currentData } = useSelector((state) => state.user);
@@ -34,7 +35,7 @@ const InfoCustomer = () => {
   }, [orders]);
 
   const fectchOrder = () => {
-    let data = orders?.filter((items) => items?.userId === currentData?.id);
+    let data = orders?.filter((items) => items?.userId === currentData?._id);
     setDataOrder(data);
   };
 
@@ -64,20 +65,7 @@ const InfoCustomer = () => {
                   Lịch sử đơn hàng
                 </span>
                 <span>
-                  {dataOrder?.length > 0 &&
-                    dataOrder
-                      .filter((item) => item.status !== 0)
-                      .map((iCount, index) => {
-                        let count = index + 1;
-                        return (
-                          <span
-                            key={index}
-                            className="absolute top-[40%] right-[45%] text-center bg-red-600 rounded-xl w-[20px] h-[20px] leading-[20px] text-white text-[9px] "
-                          >
-                            {count}
-                          </span>
-                        );
-                      })}
+                  <OrderNumbertrack dataOrder={dataOrder} />
                 </span>
               </Link>
               <div className="w-1/2 p-5 bg-white  flex flex-col gap-2 justify-center items-center relative shadow-10% rounded-xl">

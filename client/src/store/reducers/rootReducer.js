@@ -13,6 +13,7 @@ import orderReducer from "./orderReducer";
 import orderdetailReducer from "./orderdetailReducer";
 import imageReducer from "./imageReducer";
 import cateReducer from "./cateReducer";
+import voucherReducer from "./voucherReducer";
 
 const commonConfig = {
   storage,
@@ -37,6 +38,7 @@ const rootReducer = combineReducers({
   orderdetail: orderdetailReducer,
   image: imageReducer,
   cate: cateReducer,
+  voucher: voucherReducer,
 });
 
 export default rootReducer;

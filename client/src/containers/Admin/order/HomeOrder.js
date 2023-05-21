@@ -5,7 +5,7 @@ import { ItemsImg } from "../../../components";
 import icons from "../../../ultils/icons";
 import * as actions from "../../../store/actions";
 import { toast, ToastContainer } from "react-toastify";
-import { apiUpdateOrder } from "../../../services";
+import { apiDeleteOrder, apiUpdateOrder } from "../../../services";
 // import Edit from "./Edit";
 import Swal from "sweetalert2";
 import { exportExcel } from "../../../ultils/Common/Commonexport";
@@ -27,6 +27,8 @@ const HomeOrder = () => {
   const [modelCheck, setModelCheck] = useState(false);
   const [dataEdit, setDataEdit] = useState([]);
   const [modalEdit, setModalEdit] = useState(false);
+  const [check, setCheck] = useState([]);
+  const [checked, setChecked] = useState(false);
   const [payload, setPayload] = useState([
     {
       InFo: "",
@@ -41,7 +43,7 @@ const HomeOrder = () => {
   };
 
   const CheckStatusOrder = async (item) => {
-    let itemOrder = orders.filter((items) => items?.id === item?.id);
+    let itemOrder = orders.filter((items) => items?._id === item?._id);
 
     if (itemOrder[0].status !== 1) {
       toast.warning("Đã Check hàng", {
@@ -87,7 +89,7 @@ const HomeOrder = () => {
 
   const handleExport = async (item) => {
     let dataDetail = orderdetails?.filter(
-      (items) => items?.orderId === item?.id
+      (items) => items?.orderId === item?.code
     );
     // console.log(item);
     payload[0].InFo =
@@ -103,9 +105,10 @@ const HomeOrder = () => {
       item?.exportdate;
 
     for (let i = 0; i < dataDetail?.length; i++) {
+      delete dataDetail[i]._id;
+      delete dataDetail[i].imagesId;
       delete dataDetail[i].orderId;
       delete dataDetail[i].productId;
-      delete dataDetail[i].images;
       delete dataDetail[i].createdAt;
       delete dataDetail[i].createdAt;
       delete dataDetail[i].updatedAt;
@@ -116,11 +119,48 @@ const HomeOrder = () => {
     // console.log(dataDetail);
     // console.log([payload[0], ...dataDetail]);
     // console.log([payload[0], ...dataDetail]);
-    await exportExcel(
-      [payload[0], ...dataDetail],
-      "Danh sách sản phẩm",
-      "ListProduct"
-    );
+    await exportExcel(dataDetail, "Danh sách sản phẩm", "ListProduct");
+  };
+  const handleChange = (e) => {
+    let ischeked = e.target.checked;
+    let value = e.target.value;
+
+    if (ischeked) {
+      // console.log(check);
+      setCheck([...check, value]);
+    } else {
+      let datalist = check.filter((items) => items !== value);
+
+      setCheck(datalist);
+    }
+  };
+  const submitDelete = async () => {
+    //delete category
+    //delete img
+    for (let i = 0; i <= check.length; i++) {
+      // console.log(check[i]);
+      let listImg = orders.filter((items) => items?._id === check[i]);
+
+      // console.log(listImg);
+      if (listImg[0]) {
+        await apiDeleteOrder(listImg[0]);
+      }
+    }
+    toast.success("Xóa " + check.length + "  thành công", {
+      position: "top-right",
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+
+    setChecked(false);
+    setCheck([]);
+    fetchData();
+    // console.log(this.refs.minus.checked);
   };
   return (
     <div className="w-full">
@@ -145,26 +185,15 @@ const HomeOrder = () => {
                   </div>
                   <div className="flex items-center py-2 gap-3">
                     <div>
-                      <Link to="/admin/order/trash">
-                        <button className="px-6 py-2 bg-red-500 rounded-md relative">
-                          <BiTrash color="white" size={20} />
-
-                          {orders?.length > 0 &&
-                            orders
-                              .filter((item) => item.status === 0)
-                              .map((iCount, index) => {
-                                let count = index + 1;
-                                return (
-                                  <span
-                                    key={index}
-                                    className="absolute top-[-20%] right-[-10%] text-white w-[25px] h-[25px] text-center bg-blue-600 rounded-full"
-                                  >
-                                    {count}
-                                  </span>
-                                );
-                              })}
-                        </button>
-                      </Link>
+                      <button
+                        className="flex gap-2 items-center bg-red-500 px-4 py-2 rounded-md hover:opacity-[80%]  opacity-[100%] "
+                        onClick={() => submitDelete()}
+                      >
+                        <BiTrash size={20} color="white" />
+                        <span className="text-white">
+                          Delete(selected) <span>{check.length} </span>
+                        </span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -177,10 +206,10 @@ const HomeOrder = () => {
                             className="px-2 py-5 text-left bg-white w-full"
                             colSpan="12"
                           >
-                            <input
+                            {/* <input
                               className="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out"
                               type="checkbox"
-                            />
+                            /> */}
                           </th>
                         </tr>
                         <tr className="bg-gray-50 border-b border-gray-200 text-xs leading-4 text-gray-500 uppercase tracking-wider">
@@ -219,10 +248,22 @@ const HomeOrder = () => {
                               return (
                                 <tr key={index}>
                                   <td className="px-2 text-center py-2 whitespace-no-wrap border-b border-gray-200">
-                                    <input
-                                      className="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out"
-                                      type="checkbox"
-                                    />
+                                    {checked ? (
+                                      <input
+                                        type="checkbox"
+                                        className="w-4 h-4"
+                                        value={items._id}
+                                        checked
+                                        onChange={(e) => handleChange(e)}
+                                      />
+                                    ) : (
+                                      <input
+                                        type="checkbox"
+                                        className="w-4 h-4"
+                                        value={items._id}
+                                        onChange={(e) => handleChange(e)}
+                                      />
+                                    )}
                                   </td>
                                   <td className="px-2 text-center py-2 whitespace-no-wrap border-b border-gray-200">
                                     <div className="text-sm leading-5 text-gray-900">
@@ -310,14 +351,6 @@ const HomeOrder = () => {
                                               size={25}
                                               color="green"
                                             />
-                                          </div>
-                                          <div
-                                            className="bg-red-500  rounded-lg px-4 py-1 "
-                                            onClick={(e) => {
-                                              deleteSubmit(items);
-                                            }}
-                                          >
-                                            <BiTrash color="white" size={20} />
                                           </div>
                                         </div>
                                       </>

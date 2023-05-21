@@ -6,11 +6,9 @@ const ProductsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    categoryId: [
-      {
-        type: String,
-      },
-    ],
+    categoryId: {
+      type: String,
+    },
     operaId: {
       type: String,
       required: true,

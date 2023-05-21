@@ -31,10 +31,13 @@ const Header = () => {
         />
       </div>
       <div className=" flex flex-col w-full">
-        <div className="py-2 px-4  capitalize text-md-center w-full flex gap-2  items-center">
+        <Link
+          to="/admin/home"
+          className="py-2 px-4  capitalize text-md-center w-full flex gap-2  items-center"
+        >
           <BsDisplay size={20} />
           <p> DashBoard</p>
-        </div>
+        </Link>
         <div
           className="py-2 px-4 capitalize text-md-center w-full cursor-pointer relative"
           onClick={() => setMenuCatalog(!menuCatalog)}
@@ -58,8 +61,8 @@ const Header = () => {
         <div
           className={` ${
             menuCatalog
-              ? "opacity-[100%] h-[170px] transition-all   pt-2 bg-gray-05 "
-              : "opacity-0 h-[0px]  transition-all   "
+              ? "opacity-[100%] h-full transition-all   pt-2 bg-gray-05 "
+              : "opacity-0 h-[0px]   transition-all   "
           }`}
         >
           <NavLink
@@ -101,6 +104,16 @@ const Header = () => {
             }
           >
             <BiRadioCircleMarked size={25} /> <div>Opera</div>
+          </NavLink>
+          <NavLink
+            to="/admin/voucher"
+            className={({ isActive }) =>
+              isActive
+                ? "px-4 py-2 hover:text-white cursor-pointer text-white flex items-center  "
+                : "px-4 py-2 hover:text-white cursor-pointer text-gray-400 flex items-center  "
+            }
+          >
+            <BiRadioCircleMarked size={25} /> <div>Voucher</div>
           </NavLink>
         </div>
         <Link

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { ItemsImg } from "../../../components";
 import icons from "../../../ultils/icons";
 import * as action from "../../../store/actions";
-import { apiUpdateUsers } from "../../../services";
+import { apiUpdateUsers, apiUpdateUsersOld } from "../../../services";
 
 import avatar from "../../../assets/avatar.png";
 import Edit from "./Edit";
@@ -34,7 +34,7 @@ const HomeUser = () => {
       role = 1;
     }
     let avatar = items.avatar;
-    await apiUpdateUsers({ ...items, avatar: avatar, roles: role });
+    await apiUpdateUsersOld({ ...items, avatar: avatar, roles: role });
     fetchData();
   };
   const submitStatus = (item) => {

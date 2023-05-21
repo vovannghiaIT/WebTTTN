@@ -4,10 +4,16 @@ import Layout from "./Layout";
 import HomeAdmin from "./HomeAdmin";
 
 import { path } from "../../ultils/constant";
-import { HomeProduct, InsertProduct, EditProduct } from "./product";
+import {
+  HomeProduct,
+  InsertProduct,
+  EditProduct,
+  TrashProduct,
+} from "./product";
 import { EditCategory, HomeCategory, InsertCategory } from "./category";
 import { EditBrand, HomeBrand, InsertBrand, TrashBrand } from "./brand";
 import { EditOpera, HomeOpera, InsertOpera, TrashOpera } from "./opera";
+import { HomeVoucher, EditVoucher, InsertVoucher } from "./voucher";
 import { HomeUser, TrashUser } from "./user";
 import HomeOrder from "./order/HomeOrder";
 
@@ -23,9 +29,13 @@ const Admin = () => {
           <Route path={path.Opera} element={<HomeOpera />} />
           <Route path={path.Order} element={<HomeOrder />} />
           <Route path={path.User} element={<HomeUser />} />
+          <Route path={path.Voucher} element={<HomeVoucher />} />
+          <Route path={path.Home} element={<HomeAdmin />} />
+
           {/* product */}
           <Route path={path.INSERTPRODUCT} element={<InsertProduct />} />
           <Route path={path.EDITPRODUCT} element={<EditProduct />} />
+          <Route path={path.TRASHPRODUCT} element={<TrashProduct />} />
 
           {/* category */}
 
@@ -44,6 +54,10 @@ const Admin = () => {
 
           {/* user */}
           <Route path={path.TRANSHUSER} element={<TrashUser />} />
+
+          {/* voucher */}
+          <Route path={path.INSERTVOUCHER} element={<InsertVoucher />} />
+          <Route path={path.EDITVOUCHER} element={<EditVoucher />} />
         </Route>
       </Routes>
     </>

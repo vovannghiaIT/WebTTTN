@@ -52,7 +52,6 @@ const Edit = () => {
 
   useEffect(() => {
     fetchData();
-    fectDataCategory();
   }, []);
 
   useEffect(() => {
@@ -73,8 +72,9 @@ const Edit = () => {
     setDataEdit(dataProduct[0]);
   };
 
-  const handleAddCategory = (value) => {
-    setAddCategory(value);
+  const handleAddCategory = (e) => {
+    setAddCategory(e.target.value);
+    console.log(e.target.value);
   };
   const handleAddBrands = (e) => {
     setAddBrand(e.target.value);
@@ -132,17 +132,9 @@ const Edit = () => {
       setAddsale(dataEdit?.pricesale || 0);
       setCheck(dataEdit.pricesale > 0 ? true : false);
 
-      for (let y = 0; y < cates?.length; y++) {
-        let dataCate = dataEdit?.categoryId;
-        let cate = cates[y]?.product_id;
-        console.log("dataCate", dataCate);
-        console.log("cate", cate);
-      }
+      setAddCategory(dataEdit?.categoryId || "");
 
-      // console.log("cates", cates);
-
-      // setAddCategory(cate);
-
+      // console.log(dataEdit);
       let img = images.filter((items) => items?.code === dataEdit?.imagesId);
 
       // console.log(img[0]?);
@@ -157,17 +149,6 @@ const Edit = () => {
     displayorder: "",
     alt: "",
     title: "",
-    status: 1,
-  });
-  const [payloadCate, setPayloadCate] = useState({
-    _id: "",
-    name: "",
-    product_id: "",
-    slug: "",
-    imagesId: "",
-    parent_id: "",
-    displayorder: "",
-    value: "",
     status: 1,
   });
 
@@ -229,10 +210,6 @@ const Edit = () => {
     setAddsale(e.target.value);
   };
 
-  const fectDataCategory = async () => {
-    return categories;
-  };
-
   const handleInputChange = (value) => {
     setValue(value);
   };
@@ -249,13 +226,14 @@ const Edit = () => {
 
     let pricesale = addsale;
     payload.pricesale = pricesale;
-    if (addCategory.length > 0 || addCategory !== "") {
-      let categoryId = addCategory || "";
-      payload.categoryId = categoryId;
-    } else {
-      payload.categoryId = "";
-    }
-    console.log(addCategory);
+    let categoryId = addCategory || "";
+    payload.categoryId = categoryId;
+
+    let brandId = addBrand || "";
+    payload.brandId = brandId;
+
+    let operaId = addOpera || "";
+    payload.operaId = operaId;
 
     let slug = formatVietnameseToString(payload.name);
     payload.slug = slug;
@@ -271,26 +249,7 @@ const Edit = () => {
     // console.log("payload", payload);
     // console.log("payloadImage", payloadImage);
     if (invalids === 0 && payload && payloadImage) {
-      for (let i = 0; i < addCategory?.length; i++) {
-        payloadCate.name = addCategory[i]?.name;
-        payloadCate.product_id = addCategory[i]?.product_id;
-        payloadCate.imagesId = dataEdit?.imagesId;
-        payloadCate.slug = addCategory[i]?.slug;
-        payloadCate.parent_id = addCategory[i]?.parent_id;
-        payloadCate.value = addCategory[i]?.value;
-        payloadCate.status = addCategory[i]?.status;
-        payloadCate.displayorder = addCategory[i]?.displayorder;
-        if (payloadCate.product_id) {
-          payloadCate._id = addCategory[i]?._id;
-          await apiUpdateCate(payloadCate);
-          // console.log("payloadCate", payloadCate);
-        } else {
-          payloadCate.product_id = dataEdit?.categoryId;
-          await apiInsertCate(payloadCate);
-          // console.log("payloadCate", payloadCate);
-        }
-        // console.log("addCategory", addCategory);
-      }
+      // console.log(payload);
       await apiUpdateProducts(payload);
       await apiUpdateImages(payloadImage);
       fetchData();
@@ -419,7 +378,7 @@ const Edit = () => {
                 </small>
               )}
             <div className="grid grid-cols-3 gap-2 items-center w-full">
-              <p className="text-right col-span-1 font-bold">Categories</p>
+              {/* <p className="text-right col-span-1 font-bold">Categories</p>
               <AsyncSelect
                 cacheOptions
                 defaultOptions
@@ -434,26 +393,26 @@ const Edit = () => {
                 onChange={handleAddCategory}
                 className="basic-multi-select"
                 classNamePrefix="select"
-              />
-              {/* <select
+              /> */}
+              <label className="text-right col-span-1 font-bold">
+                Danh mục sản phẩm
+              </label>
+              <select
                 onChange={(e) => handleAddCategory(e)}
                 className="cursor-pointer px-2 capitalize"
-                defaultValue={dataEdit?.categoryId}
+                // defaultValue={dataEdit?.categoryId}
+                value={addCategory}
+                // value={dataEdit?.categoryId}
               >
-                <option value="DEFAULT" disabled>
-                  Chọn danh mục sản phẩm...
-                </option>
                 {categories?.length > 0 &&
-                  categories
-                    .filter((item) => item.status === 1)
-                    .map((items, index) => {
-                      return (
-                        <option key={index} value={items?._id}>
-                          {items?.name}
-                        </option>
-                      );
-                    })}
-              </select> */}
+                  categories?.map((items, index) => {
+                    return (
+                      <option key={items._id} value={items._id}>
+                        {items.name}
+                      </option>
+                    );
+                  })}
+              </select>
             </div>
             {invalidFields.length > 0 &&
               invalidFields.some((i) => i.name === "categoryId") && (
@@ -466,11 +425,9 @@ const Edit = () => {
               <select
                 onChange={(e) => handleAddBrands(e)}
                 className="cursor-pointer px-2 capitalize"
-                defaultValue={dataEdit?.brandId}
+                // defaultValue={dataEdit?.brandId}
+                value={addBrand}
               >
-                <option value="DEFAULT" disabled>
-                  Chọn thương hiệu sản phẩm...
-                </option>
                 {brands?.length > 0 &&
                   brands
                     .filter((item) => item.status === 1)
@@ -494,11 +451,8 @@ const Edit = () => {
               <select
                 onChange={(e) => handleAddOperas(e)}
                 className="cursor-pointer px-2 capitalize"
-                defaultValue={dataEdit?.operaId}
+                value={addOpera}
               >
-                <option value="DEFAULT" disabled>
-                  Chọn Hệ điều hành...
-                </option>
                 {operas?.length > 0 &&
                   operas
                     .filter((item) => item.status === 1)

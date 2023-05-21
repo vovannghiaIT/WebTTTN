@@ -10,7 +10,7 @@ export const path = {
   SEARCH: "search",
   CATEGORYALL: "categoryAll",
   PRODUCTALL: "productAll",
-  PAY: "Cart/Pay",
+  PAY: "/Cart/Pay/:price",
   // admin
   ADMIN: "/admin/*",
   CATEGORY: "/category",
@@ -19,6 +19,8 @@ export const path = {
   Opera: "/opera",
   User: "/user",
   Order: "/order",
+  Voucher: "/voucher",
+  Home: "/home",
   //category
   TRASHCATEGORY: "/category/trash",
   INSERTCATEGORY: "/category/insert",
@@ -46,6 +48,10 @@ export const path = {
 
   //order
   TRASHORDER: "/order/trash",
+
+  //voucher
+  INSERTVOUCHER: "/voucher/insert",
+  EDITVOUCHER: "/voucher/edit/:_id",
   //client
   PRODUCTDETAIL: "productdetail/:slug",
 };

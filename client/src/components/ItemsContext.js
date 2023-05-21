@@ -13,7 +13,7 @@ const ItemsContext = ({ text, left, right, slug }) => {
           </button>
         </Link>
       </div>
-      <div className="flex mt-2 gap-4 justify-start md:max-lg:flex-col-reverse sm:max-md:flex-col-reverse ">
+      <div className="flex mt-2 gap-4 justify-start md:max-lg:flex-col-reverse sm:max-md:flex-col-reverse  ">
         {left && (
           <div className="flex flex-col md:max-lg:flex-row  sm:max-md:flex-row gap-5 w-[25%] mt-5 md:max-lg:w-full sm:max-md:w-full ">
             <div className="relative cursor-pointer img__hover overflow-hidden ">

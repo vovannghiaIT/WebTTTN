@@ -8,27 +8,21 @@ const Edit = ({ dataEdit, setModalEdit, modalEdit }) => {
   const dispatch = useDispatch();
 
   const { orderdetails } = useSelector((state) => state.orderdetail);
+  const { images } = useSelector((state) => state.image);
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
     dispatch(actions.getOrderDetail());
+    dispatch(actions.getImages());
   };
 
+  console.log(orderdetails);
   let dataDetail = orderdetails?.filter(
-    (items) => items?.orderId === dataEdit?.id
+    (items) => items?.orderId === dataEdit?.code
   );
 
-  let total = 0;
-  const totalCart = () => {
-    dataDetail?.length > 0 &&
-      dataDetail?.map((item) => {
-        return (total += item.price * item.quantity);
-      });
-    return numberWithCommas(total);
-  };
-  console.log(dataEdit);
   return (
     <div>
       {modalEdit && (
@@ -100,12 +94,12 @@ const Edit = ({ dataEdit, setModalEdit, modalEdit }) => {
                     <p>
                       Tổng tiền
                       <span className="text-blue-500 px-2">
-                        {totalCart()} <sup>đ</sup>
+                        {numberWithCommas(dataEdit?.sumtotal)} <sup>đ</sup>
                       </span>
                     </p>
                   </div>
                 </div>
-                <div className="w-[50%] overflow-y-auto h-[200px]">
+                <div className="w-[50%] overflow-y-auto h-[250px]">
                   <h1 className="font-semibold text-center">
                     Thông tin đơn hàng
                   </h1>
@@ -129,13 +123,28 @@ const Edit = ({ dataEdit, setModalEdit, modalEdit }) => {
                                 {items?.name}
                               </td>
                               <td className="px-4 py-1 text-start ">
-                                <ItemsImg images={items?.images} />
+                                {images?.length > 0 &&
+                                  images
+                                    .filter(
+                                      (item) =>
+                                        item?.status === 1 &&
+                                        item?.code === items?.imagesId
+                                    )
+                                    .map((itemsImg, index) => {
+                                      return (
+                                        <div key={index}>
+                                          <ItemsImg
+                                            images={itemsImg?.picture}
+                                          />
+                                        </div>
+                                      );
+                                    })}
                               </td>
                               <td className="px-2 py-1 text-start">
                                 {items?.quantity}
                               </td>
                               <td className="px-2 py-1 text-start">
-                                {items?.price} <sup>đ</sup>
+                                {numberWithCommas(items?.price)} <sup>đ</sup>
                               </td>
                             </tr>
                           );

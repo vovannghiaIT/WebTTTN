@@ -69,7 +69,7 @@ const FilterProduct = ({ setsortDown, setsortUp }) => {
           <div className="flex flex-col gap-1">
             <MultiRangeSlider
               min={0}
-              max={100000000}
+              max={10000000}
               step={5}
               minValue={min}
               maxValue={max}

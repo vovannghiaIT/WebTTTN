@@ -33,6 +33,9 @@ const OrdersSchema = new mongoose.Schema(
     value: {
       type: String,
     },
+    sumtotal: {
+      type: String,
+    },
     status: {
       type: Number,
     },

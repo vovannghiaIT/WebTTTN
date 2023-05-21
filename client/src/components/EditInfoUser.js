@@ -147,7 +147,7 @@ const EditInfoUser = ({ modal, setModal, dataEdit }) => {
     fetchData();
     setImagesPreview([]);
     setModal(false);
-    toast.success("Sữa thông tin thành công!", {
+    toast.success("Cập nhật thông tin thành công!", {
       position: "top-right",
       autoClose: 1000,
       hideProgressBar: false,
@@ -183,7 +183,7 @@ const EditInfoUser = ({ modal, setModal, dataEdit }) => {
             >
               <div className="bg-white flex gap-5  px-4 pt-5">
                 <div className="w-[60%]">
-                  <label>FirstName</label>
+                  <label>Họ</label>
                   <input
                     type="text"
                     id="name"
@@ -196,7 +196,7 @@ const EditInfoUser = ({ modal, setModal, dataEdit }) => {
                       }))
                     }
                   />
-                  <label>LastName</label>
+                  <label>Tên</label>
                   <input
                     type="text"
                     id="name"
@@ -398,7 +398,7 @@ const EditInfoUser = ({ modal, setModal, dataEdit }) => {
                       );
                     })}
                   </div>
-                  <label>Phone</label>
+                  <label>Số điện thoại</label>
                   <input
                     type="text"
                     id="phone"
@@ -422,14 +422,14 @@ const EditInfoUser = ({ modal, setModal, dataEdit }) => {
                     setImagesPreview([]);
                   }}
                 >
-                  <i className="fas fa-times"></i> Cancel
+                  <i className="fas fa-times"></i> Trở về
                 </button>
                 <button
                   type="submit"
                   onClick={() => submitUpdate()}
                   className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-700 mr-2"
                 >
-                  <i className="fas fa-plus"></i> Update
+                  <i className="fas fa-plus"></i> Cập nhật
                 </button>
               </div>
             </div>

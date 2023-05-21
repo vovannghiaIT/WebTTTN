@@ -39,8 +39,8 @@ const CategoryProduct = () => {
 
   let ItemBrands = brands?.filter((items) => items.slug === brandSlug);
 
-  let CategoryId = ItemSlugCategory[0]?.id;
-  let BrandId = ItemBrands[0]?.id;
+  let CategoryId = ItemSlugCategory[0]?._id;
+  let BrandId = ItemBrands[0]?._id;
 
   let ProductItemCategory = [];
   if (BrandId && priceMin && priceMax) {
@@ -130,7 +130,7 @@ const CategoryProduct = () => {
                   <span>Sản phẩm theo loại :</span>
                   {categories?.length > 0 &&
                     categories
-                      .filter((items) => items.id === CategoryId)
+                      .filter((items) => items._id === CategoryId)
                       .map((item, index) => {
                         return (
                           <span className="text-red-500" key={index}>
@@ -144,7 +144,7 @@ const CategoryProduct = () => {
                     <span>Với thương hiệu :</span>
                     {brands?.length > 0 &&
                       brands
-                        .filter((items) => items.id === BrandId)
+                        .filter((items) => items._id === BrandId)
                         .map((item, index) => {
                           return (
                             <span className="text-red-500" key={index}>
@@ -176,7 +176,7 @@ const CategoryProduct = () => {
                     <ItemsProduct
                       slug={items?.slug}
                       name={items?.name}
-                      images={items?.images}
+                      imagesId={items?.imagesId}
                       pricesale={items?.pricesale}
                       price={items?.price}
                     />
@@ -191,7 +191,7 @@ const CategoryProduct = () => {
                     <ItemsProduct
                       slug={items?.slug}
                       name={items?.name}
-                      images={items?.images}
+                      imagesId={items?.imagesId}
                       pricesale={items?.pricesale}
                       price={items?.price}
                     />
@@ -207,7 +207,7 @@ const CategoryProduct = () => {
                     <ItemsProduct
                       slug={items?.slug}
                       name={items?.name}
-                      images={items?.images}
+                      imagesId={items?.imagesId}
                       pricesale={items?.pricesale}
                       price={items?.price}
                     />

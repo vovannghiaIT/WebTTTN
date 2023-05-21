@@ -92,13 +92,13 @@ const Insert = () => {
     <div className="p-4 ">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4 ">
-          <h1 className="text-xl font-semibold">Add a new brand</h1>
+          <h1 className="text-xl font-semibold">Thêm thương hiệu</h1>
           <button
             onClick={() => navigate(-1)}
             className="text-blue-400 flex items-center gap-1 cursor-pointer"
           >
             <GrFormPreviousLink size={15} />
-            back to brand list
+            Trở về
           </button>
         </div>
         <div className="flex gap-2 items-center">
@@ -118,10 +118,12 @@ const Insert = () => {
 
       <div className="bg-white border-t-4 mt-3 rounded-md border-t-blue-300">
         <div className="p-2">
-          <h1 className="capitalize text-lg border-b px-4 py-2 ">Brand Info</h1>
+          <h1 className="capitalize text-lg border-b px-4 py-2 ">
+            Thông tin thương hiệu
+          </h1>
           <div className="p-5 flex flex-col gap-3 justify-center items-center">
             <div className="grid grid-cols-3 gap-2 items-center w-full">
-              <p className="text-right col-span-1 font-bold">Name</p>
+              <p className="text-right col-span-1 font-bold">Tên</p>
               <input
                 type="text"
                 id="name"

@@ -18,6 +18,7 @@ const actionTypes = {
   GET_OPERA: "GET_OPERA",
   GET_USER: "GET_USER",
   GET_ORDER: "GET_ORDER",
+  GET_VOUCHER: "GET_VOUCHER",
   GET_ORDERDETAIL: "GET_ORDERDETAIL",
 };
 export default actionTypes;

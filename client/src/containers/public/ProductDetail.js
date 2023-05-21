@@ -104,7 +104,7 @@ const ProductDetail = () => {
     let brands = dataDetail?.brands?.name;
     let Cartnumber = dataDetail?.number;
     // let images = img.filter((i, index) => indexs.some((i) => i === index))
-    console.log(img);
+    // console.log(img);
     const cartArray = [
       {
         _id: idCart,
@@ -226,14 +226,14 @@ const ProductDetail = () => {
                       {dataDetail?.pricesale <= 0 ? (
                         <>
                           <span className="text-[20px] text-red-500 mt-1">
-                            {numberWithCommas(parseInt(dataDetail?.price))}đ
+                            {numberWithCommas(parseInt(dataDetail?.price))}
                             <span className="underline">đ</span>
                           </span>
                         </>
                       ) : (
                         <>
                           <span className="line-through mt-1">
-                            {numberWithCommas(parseInt(dataDetail?.price))}đ
+                            {numberWithCommas(parseInt(dataDetail?.price))}
                             <span className="underline">đ</span>
                           </span>
                           <span className="text-[20px] text-red-500 ">
@@ -399,8 +399,6 @@ const ProductDetail = () => {
                 </ul>
               </div>
               <div className="w-[70%] mt-4 sm:max-md:w-full border-2 p-3 rounded-xl  relative">
-                <h2>Thông tin chi tiết</h2>
-
                 {!text && (
                   <div>
                     {dataDetail?.fulldescription &&

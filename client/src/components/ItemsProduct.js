@@ -20,8 +20,8 @@ const ItemsProduct = ({
   const { categories } = useSelector((state) => state.category);
   const { images } = useSelector((state) => state.image);
 
-  var PhoneHot = "63fff9ef2e19bcfd9a272ccd";
-  var LapTopHot = "63fffa2a2e19bcfd9a272cd3";
+  var PhoneHot = "645641f925c63d8363ccf32f";
+  var LapTopHot = "64127993c6ff4b72d7636ad1";
   //PanginateProduct
   const [itemOffsetProductleft, setItemOffsetProductleft] = useState(0);
   const [itemsPerPageProductleft, setItemsPerPageProductleft] = useState(8);
@@ -110,7 +110,8 @@ const ItemsProduct = ({
               {images?.length > 0 &&
                 images
                   .filter(
-                    (item) => item?.status === 1 && item?.code === imagesId
+                    (item) =>
+                      item?.status === 1 && item?.code === items?.imagesId
                   )
                   .map((itemsImg, index) => {
                     return (
@@ -140,7 +141,12 @@ const ItemsProduct = ({
                 ) : (
                   <>
                     <p className="text-red-500 text-[15px] font-medium">
-                      {numberWithCommas(items.pricesale)}đ
+                      {numberWithCommas(
+                        parseInt(
+                          items?.price - items?.price * (items?.pricesale / 100)
+                        )
+                      )}
+                      đ
                     </p>
                     <p className="text-gray-400 line-through text-[14px]">
                       {numberWithCommas(items.price)}đ
@@ -157,13 +163,15 @@ const ItemsProduct = ({
           return (
             <Link
               to={"productdetail/" + items?.slug}
-              className={`shadow-25% flex gap-2 flex-col p-2  w-full h-full  bg-white rounded-md overflow-hidden cursor-pointer`}
+              className={`shadow-25% flex gap-2 flex-col p-2  w-full h-full   bg-white rounded-md overflow-hidden cursor-pointer`}
               key={index}
             >
               {images?.length > 0 &&
                 images
+
                   .filter(
-                    (item) => item?.status === 1 && item?.code === imagesId
+                    (item) =>
+                      item?.status === 1 && item?.code === items?.imagesId
                   )
                   .map((itemsImg, index) => {
                     return (
@@ -193,7 +201,12 @@ const ItemsProduct = ({
                 ) : (
                   <>
                     <p className="text-red-500 text-[15px] font-medium">
-                      {numberWithCommas(items.pricesale)}đ
+                      {numberWithCommas(
+                        parseInt(
+                          items?.price - items?.price * (items?.pricesale / 100)
+                        )
+                      )}
+                      đ
                     </p>
                     <p className="text-gray-400 line-through text-[14px]">
                       {numberWithCommas(items.price)}đ

@@ -15,21 +15,38 @@ const Cart = () => {
   const dispatch = useDispatch();
   // console.log(cookies.Cart);
   const { images } = useSelector((state) => state.image);
+  const { vouchers } = useSelector((state) => state.voucher);
   const [dataCart, setDataCart] = useState();
 
+  const [dataVoucher, setDataVoucher] = useState();
+  const [statusVoucher, setStatusVoucher] = useState(0);
+  const [dataPriceSale, setDataPriceSale] = useState(0);
+  const [total, setTotal] = useState();
   useEffect(() => {
     fetchDataImg();
   }, []);
   const fetchDataImg = async () => {
     dispatch(actions.getImages());
+    dispatch(actions.getVoucher());
   };
 
   useEffect(() => {
     fetchData();
+    totalCart();
   }, [dataCart]);
   const fetchData = () => {
     setDataCart(cookies?.Cart);
   };
+
+  const refreshVouchers = (e) => {
+    // console.log(1);
+    const check = e.keyCode || e.charCode; // const {key} = event; ES6+
+    if (check === 8) {
+      setStatusVoucher(0);
+      totalCart();
+    }
+  };
+
   // console.log(dataCart)
 
   const removeCartItem = async (items) => {
@@ -140,14 +157,17 @@ const Cart = () => {
     }
   };
   // console.log(dataCart)
-  let total = 0;
+
   const totalCart = () => {
+    let sum = 0;
     dataCart?.length > 0 &&
       dataCart?.map((item) => {
-        return (total += item.price * item.number);
+        return (sum += item.price * item.number);
       });
-    return numberWithCommas(total);
+    // console.log("sum", sum);
+    setTotal(parseInt(sum));
   };
+
   const indexs = [0];
 
   const handleSubmitDeleteCart = async () => {
@@ -168,7 +188,58 @@ const Cart = () => {
       setDataCart("");
     }
   };
-  console.log(cookies);
+  // console.log(cookies);
+
+  const handleSubmitVoucher = () => {
+    let dataFilter = vouchers?.filter((items) => items?.code === dataVoucher);
+
+    let date = new Date();
+
+    let statusYear =
+      dataFilter[0]?.date_end.slice(0, 4) >= date.getFullYear().toString()
+        ? 1
+        : 0;
+    let Month = 0;
+
+    if (date.getMonth() < 10) {
+      Month = date.getMonth() + 1;
+      Month = "0" + Month;
+    } else {
+      Month = date.getMonth() + 1;
+    }
+    // console.log("Month", Month);
+
+    let Day = 0;
+    let statusMont =
+      dataFilter[0]?.date_end.slice(5, 7) >= Month.toString() ? 1 : 0;
+    if (date.getDate() < 10) {
+      Day = "0" + date.getDate();
+    } else {
+      Day = date.getDate();
+    }
+    // console.log("Day", Day);
+    let statusDay =
+      dataFilter[0]?.date_end.slice(8, 10) >= Day.toString() ? 1 : 0;
+
+    // console.log(dataFilter[0]?.date_start.slice(8, 10));
+    if (statusYear === 0 || statusMont === 0 || statusDay === 0) {
+      setStatusVoucher(3);
+      totalCart();
+    } else {
+      if (dataFilter?.length > 0) {
+        setStatusVoucher(1);
+        setDataPriceSale(dataFilter[0]?.price);
+        if (total < parseInt(dataFilter[0]?.price)) {
+          setTotal(0);
+        } else {
+          setTotal(total - parseInt(dataFilter[0]?.price));
+        }
+      } else {
+        setStatusVoucher(0);
+        totalCart();
+      }
+    }
+  };
   return (
     <div>
       <div className=" mx-auto mt-2 w-full ">
@@ -329,20 +400,49 @@ const Cart = () => {
               <input
                 type="text"
                 id="promo"
+                onKeyDown={(e) => refreshVouchers(e)}
+                onChange={(e) => setDataVoucher(e.target.value)}
                 placeholder="Enter your code"
                 className="p-2 text-sm w-full"
               />
             </div>
-            <button className="bg-red-500 hover:bg-red-600 px-5 py-2 text-sm text-white uppercase">
+            <button
+              className="bg-red-500 hover:bg-red-600 px-5 py-2 text-sm text-white uppercase"
+              onClick={() => handleSubmitVoucher()}
+            >
               Apply
             </button>
+            {statusVoucher === 1 && (
+              <small className="px-2 py-2">
+                Voucher giảm giá
+                <span className="text-red-500 px-2">
+                  {numberWithCommas(dataPriceSale)} đ
+                </span>
+              </small>
+            )}
+            {dataVoucher && statusVoucher === 3 && (
+              <small className="px-2 py-2 text-red-500">
+                Voucher Đã hết hạn
+              </small>
+            )}
+            {dataVoucher && statusVoucher === 0 && (
+              <small className="px-2 py-2 text-red-500">
+                Voucher không tồn tại
+              </small>
+            )}
+            {!dataVoucher && (
+              <small className="px-2 py-2 text-red-500">
+                Vui lòng nhập voucher
+              </small>
+            )}
             <div className="border-t mt-8">
-              <div className="flex font-semibold justify-between py-6 text-sm uppercase">
-                <span>Tổng chi phí</span>
-
-                <span>{totalCart()}</span>
+              <div className="flex font-semibold justify-between py-6 text-sm ">
+                <span className="uppercase">Tổng chi phí</span>
+                <span className="text-red-500">
+                  {total && numberWithCommas(total)} đ
+                </span>
               </div>
-              <Link to={"/" + path.PAY}>
+              <Link to={path.PAY + dataPriceSale}>
                 <button className="bg-indigo-500 font-semibold hover:bg-indigo-600 py-3 text-sm text-white uppercase w-full">
                   Thanh Toán
                 </button>

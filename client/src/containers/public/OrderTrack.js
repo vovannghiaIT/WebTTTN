@@ -3,6 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import icons from "../../ultils/icons";
 import * as actions from "../../store/actions";
 import { BsXLg } from "react-icons/bs";
+import Swal from "sweetalert2";
+import { apiUpdateOrder } from "../../services";
+import { ToastContainer, toast } from "react-toastify";
 
 const OrderTrack = () => {
   const {
@@ -33,7 +36,7 @@ const OrderTrack = () => {
   }, [orders]);
 
   const fectchOrder = () => {
-    let data = orders?.filter((items) => items?.userId === currentData?.id);
+    let data = orders?.filter((items) => items?.userId === currentData?._id);
     setDataOrder(data);
   };
 
@@ -41,6 +44,40 @@ const OrderTrack = () => {
     // console.log(index)
     setShowOrder(true);
     setModalIndex(index);
+  };
+  const submitStatus = (item) => {
+    if (item.status === 1) {
+      toast.warn("Sản phẩm chưa duyệt!", {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+      });
+    } else {
+      Swal.fire({
+        title: "Bạn xác nhận đã giao hàng? <br/>" + item?.code,
+
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "vâng, chắc chắn rồi!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          Swal.fire(
+            "Xác nhận thành công thành công!",
+            "Cảm ơn bạn đã ủng hộ chúng tôi.",
+            "success"
+          );
+
+          await apiUpdateOrder({ ...item, status: 3 });
+          fetchData();
+        }
+      });
+    }
   };
   //   console.log("modalIndex", modalIndex);
   // console.log("dataOrder", dataOrder);
@@ -69,7 +106,9 @@ const OrderTrack = () => {
                   <div className=" p-4 w-full  rounded-lg grid grid-cols-4    gap-2">
                     <div className="flex flex-col gap-2">
                       <span className="sm:max-md:text-[12px]">Mã đơn hàng</span>
-                      <span className="text-red-500 sm:max-md:text-[12px]">{items?.code}</span>
+                      <span className="text-red-500 sm:max-md:text-[12px]">
+                        {items?.code}
+                      </span>
                     </div>
                     <div className="flex flex-col gap-2">
                       <span>Người nhận hàng</span>
@@ -102,14 +141,13 @@ const OrderTrack = () => {
                           {items?.exportdate}
                         </span>
                       </div>
-                      {/* <button
-                        onClick={() => toggleModals(index)}
-                        className="text-xs"
-                      >
-                        <RiArrowDropDownFill size={25} />
-                      
-                      </button> */}
                     </div>
+                    <button
+                      onClick={() => submitStatus(items)}
+                      className="text-indigo-600  px-2 hover:text-indigo-900 focus:outline-none focus:underline"
+                    >
+                      Xác nhận đã giao
+                    </button>
                   </div>
                   {showOrder && modalIndex === index && (
                     <div className="text-center w-full flex justify-center items-center">
@@ -118,7 +156,9 @@ const OrderTrack = () => {
                           <span
                             className="  rounded-xl  w-6 h-6 order-tracking "
                             data-bg={`${
-                              items?.status === 2 ? "green" : "#f7be16"
+                              items?.status === 2 || items?.status === 3
+                                ? "green"
+                                : "#f7be16"
                             }`}
                           >
                             <AiFillCheckCircle size={24} color="green" />
@@ -139,7 +179,9 @@ const OrderTrack = () => {
                         <div className="w-full flex justify-between items-center pb-2 pt-0 px-2">
                           <span
                             className={`w-[33.33%]  ${
-                              items?.status === 1 || items?.status === 2
+                              items?.status === 1 ||
+                              items?.status === 2 ||
+                              items?.status === 3
                                 ? "text-green-500"
                                 : ""
                             }`}
@@ -148,7 +190,7 @@ const OrderTrack = () => {
                           </span>
                           <span
                             className={`w-[33.33%]  ${
-                              items?.status === 2 || items?.status === 3
+                              items?.status !== 2 || items?.status === 3
                                 ? "text-green-500"
                                 : ""
                             }`}
@@ -166,6 +208,18 @@ const OrderTrack = () => {
                       </div>
                     </div>
                   )}
+                  <ToastContainer
+                    position="top-right"
+                    autoClose={1000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="light"
+                  />
                 </div>
               );
             })}

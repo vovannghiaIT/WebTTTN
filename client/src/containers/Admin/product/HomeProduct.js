@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import icons from "../../../ultils/icons";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Link,
+  createSearchParams,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../../../store/actions";
 import ItemsImg from "../../../components/ItemsImg";
@@ -8,6 +13,8 @@ import {
   apiDeleteCate,
   apiDeleteImages,
   apiDeleteProduct,
+  apiSearchProductAdmin,
+  apiUpdateProducts,
 } from "../../../services";
 import { toast } from "react-toastify";
 import { Pagination } from "../../../components";
@@ -18,10 +25,19 @@ const HomeProduct = () => {
   const { products } = useSelector((state) => state.product);
   const { images } = useSelector((state) => state.image);
   const { cates } = useSelector((state) => state.cate);
+  const { categories } = useSelector((state) => state.category);
 
   const [checkAll, setcheckAll] = useState(false);
   const [check, setCheck] = useState([]);
+  const [menuCatalog1, setMenuCatalog1] = useState(false);
+  const [addCategory, setAddCategory] = useState("");
   const [checked, setChecked] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [dataSearch, setdataSearch] = useState([]);
+  const [paySearch, setPaySearch] = useState({
+    key: "",
+    categoryId: "",
+  });
   useEffect(() => {
     fetchData();
   }, []);
@@ -29,6 +45,11 @@ const HomeProduct = () => {
     dispatch(actions.getProduct());
     dispatch(actions.getImages());
     dispatch(actions.getCate());
+    dispatch(actions.getCategories());
+  };
+
+  const handleAddCategory = (e) => {
+    setAddCategory(e.target.value);
   };
   const {
     BiPlusCircle,
@@ -39,6 +60,7 @@ const HomeProduct = () => {
     AiFillCheckCircle,
     GrEdit,
     BiCheckboxMinus,
+    AiFillCaretLeft,
   } = icons;
 
   const handleChange = (e) => {
@@ -61,22 +83,8 @@ const HomeProduct = () => {
     for (let i = 0; i < check.length; i++) {
       let listImg = products.filter((items) => items?._id === check[i]);
 
-      let listCate = cates.filter(
-        (items) => items?.product_id === listImg[0]?.categoryId
-      );
-      for (let item = 0; item < listCate.length; item++) {
-        await apiDeleteCate(listCate[i]);
-      }
-
       if (listImg[0]) {
-        await apiDeleteProduct(listImg[0]);
-      }
-      let itemsImg = images.filter(
-        (items) => items?.code === listImg[0]?.imagesId
-      );
-
-      if (itemsImg[0]) {
-        await apiDeleteImages(itemsImg[0]);
+        await apiUpdateProducts({ ...listImg[0], status: 0 });
       }
     }
     toast.success("Xóa " + check.length + " sản phẩm thành công", {
@@ -107,6 +115,18 @@ const HomeProduct = () => {
     const newOffset = (event.selected * itemsPerPage) % products.length;
     setItemOffset(newOffset);
   };
+
+  const handleSubmitSearch = () => {
+    let categoryId = addCategory;
+    paySearch.categoryId = categoryId;
+    navigate({
+      pathname: "/admin/product",
+      search: createSearchParams({
+        key: paySearch?.key,
+        categoryId: paySearch?.categoryId,
+      }).toString(),
+    });
+  };
   return (
     <div className="p-5 grid gap-4">
       <div className="flex justify-between items-center">
@@ -128,17 +148,98 @@ const HomeProduct = () => {
               Delete(selected) <span>{check.length} </span>
             </span>
           </button>
+          <Link
+            to="/admin/product/trash"
+            className="flex gap-2 items-center bg-red-500 px-4 py-2 rounded-md hover:opacity-[80%]  opacity-[100%] relative "
+          >
+            <BiTrash size={20} color="white" />
+            {products?.length > 0 &&
+              products
+                .filter((item) => item.status === 0)
+                .map((iCount, index) => {
+                  let count = index + 1;
+                  return (
+                    <span
+                      key={index}
+                      className="absolute z-10 top-[-20%] right-[-10%] text-white w-[25px] h-[25px] text-center bg-blue-600 rounded-full"
+                    >
+                      {count ? count : 0}
+                    </span>
+                  );
+                })}
+            <span className="text-white"> Trash</span>
+          </Link>
         </div>
       </div>
-      <div className="p-5 bg-white rounded-sm shadow-md flex items-center gap-2 justify-between">
-        <h1 className="capitalize text-lg font-semibold flex gap-4 items-center">
-          <span>
-            <FiSearch size={23} />
-          </span>
-          Search
-        </h1>
-        <RiArrowDropDownFill size={35} />
+      <div>
+        <div
+          className="p-5 bg-white rounded-sm shadow-md flex items-center gap-2 justify-between"
+          onClick={() => setMenuCatalog1(!menuCatalog1)}
+        >
+          <h1 className="capitalize text-lg font-semibold flex gap-4 items-center">
+            <span>
+              <FiSearch size={23} />
+            </span>
+            Search
+          </h1>
+          <div
+            className={` ${
+              menuCatalog1
+                ? "opacity-[100%] rotate-[-90deg] transition-all  "
+                : "opacity-[100%] rotate-0 transition-all  "
+            }`}
+          >
+            <AiFillCaretLeft size={15} />
+          </div>
+        </div>
       </div>
+      <div
+        className={` ${
+          menuCatalog1
+            ? "opacity-[100%] h-[170px] transition-all   pt-2 bg-gray-05 "
+            : "opacity-0 h-[0px]  transition-all   "
+        }`}
+      >
+        <div className="bg-white rounded-sm shadow-md p-2">
+          <label className="p-2">Name</label>
+          <input
+            className="w-[300px]  border p-2"
+            onChange={(e) =>
+              setPaySearch((prev) => ({
+                ...prev,
+                ["key"]: e.target.value,
+              }))
+            }
+          />
+          <label className="p-2">Category</label>
+          <select
+            defaultValue={"DEFAULT"}
+            onChange={(e) => handleAddCategory(e)}
+            className="cursor-pointer px-2 capitalize w-[300px]"
+          >
+            <option value="DEFAULT" disabled>
+              Chọn danh mục sản phẩm...
+            </option>
+            {categories?.length > 0 &&
+              categories
+                .filter((item) => item.status === 1)
+                .map((items, index) => {
+                  return (
+                    <option key={index} value={items._id}>
+                      {items.name}
+                    </option>
+                  );
+                })}
+          </select>
+          <button
+            className="p-2 bg-red-500 rounded-md ml-5 text-white"
+            onClick={() => handleSubmitSearch()}
+          >
+            Tìm kiếm
+          </button>
+        </div>
+      </div>
+
       <div className="bg-white rounded-sm shadow-md p-2 ">
         <table
           className="bg-gray-200 w-full overflow-hidden mb-5 "

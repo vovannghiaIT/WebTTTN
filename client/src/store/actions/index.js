@@ -9,3 +9,4 @@ export * from "./order";
 export * from "./orderdetail";
 export * from "./image";
 export * from "./cate";
+export * from "./voucher";
